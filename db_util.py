@@ -1,6 +1,7 @@
 from flask import Flask
-import couchdb 
 from couchdb.client import Server
+import couchdb 
+import json
 
 no_users = 0
 
@@ -12,6 +13,14 @@ def init_couchdb():
 	    db = server.create('pinterest')
 	except Exception:
 	    db = server['pinterest']
+	return db
+
+def init_boards():
+	server = Server()
+	try:
+	    db = server.create('boards')
+	except Exception:
+	    db = server['boards']
 	return db
 
 
@@ -36,8 +45,24 @@ def user_signup(firstName,lastName,emailId,password):
 	return 0
 
 
-def board_details(user_id,boardName,boardDesc,category,isPrivate,):
+def create_board(user_id,boardName,boardDesc,category,isPrivate):
 	print "Create Board"
+	db = init_boards()
+	doc = {'boardName':boardName , 'boardDesc':boardDesc, 'category':category , 'isPrivate':isPrivate , 'user_id':user_id}
+	db.save(doc)
+	for docid in  db :
+		boards = db.get(docid)
+		print boards;
+
+def get_boards(user_id):
+	print "Get List of all boards"
+	list_boards = []
+	db = init_boards()
+	for docid in db:
+		boards = db.get(docid)
+		if(boards['user_id'] == user_id):
+			list_boards.append(boards)
+	return json.dumps(list_boards)
 
 
 if __name__ == '__main__':
