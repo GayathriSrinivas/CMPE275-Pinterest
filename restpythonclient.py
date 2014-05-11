@@ -7,7 +7,7 @@ def signUp():
     lastName = raw_input('Lastname ')
     email = raw_input('email ')
     password = raw_input('password ')
-    data1 = {'firstName':firstName, 'lastName':lastName, 'emailId':email, 'password':password}
+    data1 = {'firstName':firstName, 'lastName':lastName, 'email':email, 'password':password}
     url = "http://127.0.0.1:5000/user/login"
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
