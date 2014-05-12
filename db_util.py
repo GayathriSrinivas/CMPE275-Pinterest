@@ -60,7 +60,7 @@ def user_signin(emailId, password):
         user = db.get(docid)
         if user.get('emailId',None) == emailId and user.get('password',None) == password:
             return user['user_id']
-        return "Email & Password don't match"
+    return "Email & Password don't match"
 
 
 def get_doc_for_user_id(user_id):
@@ -103,17 +103,29 @@ def get_aboard(user_id, boardName):
     return 0
 
 
-def update_board(user_id, boardName, boardDesc, category, isPrivate):
+def update_board(user_id, boardName,boardName1, boardDesc, category, isPrivate):
     print "Update a Board"
+    temp = []
     db = init_boards()
-    uboard = {'boardName': boardName, 'boardDesc': boardDesc, 'category': category, 'isPrivate': isPrivate}
+    print "user_id",user_id
     doc = get_doc_for_user_id(user_id)
     list_ub = doc['boards']
+    print "list_ub",list_ub,
     for ind, x in enumerate(list_ub):
         if x['boardName'] == boardName:
-            list_ub[ind] = uboard
+            temp = x
+            if(boardName1 != None):    
+                temp["boardName"] = boardName1
+            if(boardDesc != None):
+                temp["boardDesc"] = boardDesc
+            if(category != None):    
+                temp["category"] = category
+            if(isPrivate != None):
+                temp["isPrivate"] = isPrivate
+            print "temp::: ",temp
+            list_ub[ind] = temp
     db.update([doc])
-    return uboard
+    return temp
 
 
 def delete_board(user_id, boardName):

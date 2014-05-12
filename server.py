@@ -81,8 +81,8 @@ def boards(user_id):
             {'url': '/users/{UserId}/boards/{boardName}/pins/', 'method': 'POST'}
         ]
 
-        js = {'Created Board': sboards, 'Links': links}
-        resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
+        js = {'Links': links}
+        resp = Response(json.dumps(js, indent = 2), status=201, mimetype='application/json')
         resp.headers['Link'] = 'http://127.0.0.1:5000'
         #return "201 User Login Successful !! "
         return resp
@@ -115,14 +115,14 @@ def asboard(user_id, boardName):
 @app.route('/user/<int:user_id>/boards/<string:boardName>/', methods=['PUT', 'DELETE'])
 def updateBoard(user_id, boardName):
     if request.method == "PUT":
-        print
-        "PUT Request"
+        print "PUT Request"
         board_details = request.get_json()
-        boardName = board_details.get('boardName')
-        boardDesc = board_details.get('boardDesc')
-        category = board_details.get('category')
-        isPrivate = board_details.get('isPrivate', 'False')
-        sboards = db_util.update_board(user_id, boardName, boardDesc, category, isPrivate)
+
+        boardName1 = board_details.get('boardName',None)
+        boardDesc = board_details.get('boardDesc',None)
+        category = board_details.get('category',None)
+        isPrivate = board_details.get('isPrivate', None)
+        sboards = db_util.update_board(user_id, boardName,boardName1, boardDesc, category, isPrivate)
         # Return List of Allowed Operations
         links = [
             {'url': '/users/{UserId}/boards/{boardName}', 'method': 'GET'},
