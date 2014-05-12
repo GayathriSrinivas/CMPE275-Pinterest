@@ -14,7 +14,7 @@ def welcome_page():
 
 
 #Database to Enter Detais
-@app.route("/user/add", methods=['POST'])
+@app.route("/user/signUp", methods=['POST'])
 def user_signup():
     user_details = request.get_json()
     firstName = user_details.get('firstName')

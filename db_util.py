@@ -42,7 +42,7 @@ def user_signup(firstName, lastName, emailId, password):
     db = init_boards()
     for docid in db:
         user = db.get(docid)
-        if user['email'] == emailId:
+        if user.get('emailId',None) == emailId:
             print "User already Registered. Please proceed to SignIn"
             return user['user_id']
     print "New User"
@@ -58,7 +58,7 @@ def user_signin(emailId, password):
     db = init_boards()
     for docid in db:
         user = db.get(docid)
-        if user['emailId'] == emailId and user['password'] == password:
+        if user.get('emailId',None) == emailId and user.get('password',None) == password:
             return user['user_id']
         return "Email & Password don't match"
 

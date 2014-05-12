@@ -6,10 +6,10 @@ def signUp():
     #data1 = {'firstName':'Priyanka', 'lastName':'Deo', 'emailId':'deo.priyanka02@gmail.com', 'password':'dfer'}
     firstName = raw_input('Firstname ')
     lastName = raw_input('Lastname ')
-    email = raw_input('email ')
+    emailId = raw_input('email ')
     password = raw_input('password ')
-    data1 = {'firstName':firstName, 'lastName':lastName, 'email':email, 'password':password}
-    url = "http://127.0.0.1:5000/user/login"
+    data1 = {'firstName':firstName, 'lastName':lastName, 'emailId':emailId, 'password':password}
+    url = "http://127.0.0.1:5000/user/signUp"
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
@@ -31,15 +31,17 @@ def signIn():
     email = raw_input('email ')
     password = raw_input('password ')
     data1 = {'emailId':email, 'password':password}
-    url = "http://127.0.0.1:5000/user/add"
+    url = "http://127.0.0.1:5000/user/login"
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
     print r.text
+    resp =  json.loads(r.text)
+    print resp["UserID"]
 
 def createBoard():
     data1 = {"boardName":"Summer Wear","boardDesc":"Cool clothes for summer","category": "Clothes","isPrivate": "False"}
-    url = "http://127.0.0.1:5000/user/add"
+    url = "http://127.0.0.1:5000/user//boards"
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
