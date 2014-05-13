@@ -3,7 +3,7 @@ from flask import request
 from flask import Response
 from flask import abort
 import json
-
+from werkzeug import secure_filename
 import db_util
 
 
@@ -14,6 +14,23 @@ app = Flask(__name__)
 def welcome_page():
     return "Welcome to Pinterest !!!"
 
+
+@app.route('/image',methods = ['POST'])
+def image():
+    f = request.files['file']
+    #Save on Cloud
+    tup = tempfile.mkstemp(suffix=".jpg",prefix="image_",dir="/var/www/snaptext_images")
+    f = os.fdopen(tup[0], "w")
+    print "Asoulte filname :: ",tup[1]
+    link = "http://snaptext.foamsnet.com/snaptext_images/%s" % os.path.basename(tup[1])
+    print link
+    f.write(request.data)
+    f.close()
+    os.system("chmod a+r %s" % tup[1])
+    return json.dumps({"fileName" : link })
+    f.save('/home/gayathri/CMPE275-Pinterest/images/' + secure_filename(f.filename))
+
+    return Response(json.dumps({"fileName" : f.filename }),status=201, mimetype='application/json')
 
 #Database to Enter Details
 @app.route("/users/signUp/", methods=['POST'])
@@ -300,4 +317,4 @@ def updateComment(user_id, boardName, pin_Id, comment_Id):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host="0.0.0.0",debug=True)

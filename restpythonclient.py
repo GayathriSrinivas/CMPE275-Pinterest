@@ -26,6 +26,7 @@ def signUp():
 
 
 def signIn():
+    global userID
     email = raw_input('email')
     password = raw_input('password')
     data1 = {'emailId': email, 'password': password}
@@ -45,6 +46,7 @@ def signIn():
 
 
 def createBoard():
+    global userID
     boardName = raw_input('boardName')
     boardDesc = raw_input('boardDesc')
     category = raw_input('category')
@@ -58,6 +60,7 @@ def createBoard():
 
 
 def getBoards():
+    global userID
     url = "http://" + host + "/users/%d/boards/" % userID
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.get(url, headers=headers)
@@ -66,6 +69,7 @@ def getBoards():
 
 
 def getSingleBoard():
+    global userID
     print "Enter Board Name to be returned"
     boardName = raw_input('boardName')
     url = "http://" + host + "users/%d/boards/%s/" % (userID, boardName)
@@ -76,6 +80,7 @@ def getSingleBoard():
 
 
 def deleteBoard():
+    global userID
     print "Enter Board Name to be deleted ::"
     boardName = raw_input('boardName')
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
@@ -86,6 +91,7 @@ def deleteBoard():
 
 
 def updateBoard():
+    global userID
     print "Enter Board Name to be updated ::"
     boardName = raw_input('boardName')
     boardName1 = None
@@ -113,19 +119,38 @@ def updateBoard():
 
 
 def createPins():
-    boardName = raw_input('boardName')
+    global userID
+    #Choose Image from this List of Images
+    images = { '1':'college.jpg',
+               '2' :'clothes.jpg',
+               '3' :'food.jpg',
+               '4':'homeDecor.jpg'
+              }
+    print json.dumps(images,indent=2)
+    pinImage = raw_input ("choose Which image to upload") 
     pinName = raw_input('pinName')
-    pinImage = raw_input('pinImage')
+    boardName = raw_input('boardName')
     pinDesc = raw_input('pinDesc')
-    data1 = {"pinName": pinName, "pinImage": pinImage, "pinDesc": pinDesc}
-    url = "http://" + host + "/user/%d/boards/%s/pins/" % (userID, boardName)
+
+    #Storing the Image on the Server
+    url = "http://" + host + "/image"  
+    files = { 'file': open('/home/gayathri/CMPE275-Pinterest/client-images/'+images[pinImage], 'rb') }
+    r = requests.post(url, files=files) 
+    r = json.loads(r.text)
+    
+    #Storing Image Info on the Server
+    data1 = {"pinName": pinName, "pinImage": r["fileName"], "pinDesc": pinDesc}
+    url = "http://" + host + "/users/%d/boards/%s/pins/" % (userID, boardName)
+    print url
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
+
     r = requests.post(url, data=json.dumps(data1), headers=headers)
     print r.status_code
     print r.text
 
 
 def getPins():
+    global userID
     boardName = raw_input('boardName')
     url = "http://" + host + "/users/%d/boards/%s/pins/" % (userID, boardName)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
@@ -135,6 +160,7 @@ def getPins():
 
 
 def getSinglePin():
+    global userID
     print "Enter Pin to be returned ::"
     boardName = raw_input('boardName')
     pin_Id = raw_input('pin_Id')
@@ -146,6 +172,7 @@ def getSinglePin():
 
 
 def deletePins():
+    global userID
     print "Enter Pin to be deleted ::"
     boardName = raw_input('boardName')
     pin_Id = raw_input('pin_Id')
@@ -157,6 +184,7 @@ def deletePins():
 
 
 def updatePins():
+    global userID
     print "Enter Pin to be updated ::"
     boardName = raw_input('boardName')
     pin_Id = raw_input('pin_Id')
@@ -185,6 +213,7 @@ def updatePins():
 
 
 def updateComment():
+    global userID
     print "Enter Comment to be updated ::"
     boardName = raw_input('boardName')
     pin_Id = raw_input('pin_Id')
@@ -207,6 +236,7 @@ def updateComment():
 
 
 def getSingleComment():
+    global userID
     print "Enter Comment to be returned ::"
     boardName = raw_input('boardName')
     pin_Id = raw_input('pin_Id')
@@ -219,6 +249,7 @@ def getSingleComment():
 
 
 def deleteComment():
+    global userID
     print "Enter Comment to be deleted ::"
     boardName = raw_input('boardName')
     pin_Id = raw_input('pin_Id')
@@ -231,6 +262,7 @@ def deleteComment():
 
 
 def getComment():
+    global userID
     boardName = raw_input('boardName')
     pin_Id = raw_input('pin_Id')
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/" % (userID, boardName, pin_Id)
@@ -241,6 +273,7 @@ def getComment():
 
 
 def createComment():
+    global userID
     boardName = raw_input('boardName')
     pin_Id = raw_input('pin_Id')
     pinComment = raw_input("pinComment")
@@ -337,7 +370,8 @@ def main_options():
 
 
 if __name__ == '__main__':
-    host = raw_input("The host id: ")
+    host = "127.0.0.1:5000"
+    #host = raw_input("The host id: ")
     while True:
         var = raw_input("Enter an option 1. SignUp 2.SignIn")
         if var == '1':
