@@ -189,10 +189,24 @@ def updatePins():
 
 
 def updateComment():
-    data1 = {"Comment":"this my comment"}
-    url = "http://127.0.0.1:5000/user/boards"
-    headers = {'Content-type':'application/json', 'Accept':'text/json'}
-    r = requests.put(url, data=json.dumps(data1),  headers = headers)
+    global userID
+    print "Enter Comment Id to be updated ::"
+    boardName = raw_input('boardName')
+    pin_Id = raw_input('pin_Id')
+    comment_Id1 = None
+    pinComment = None
+    while True:
+        varc = raw_input("Enter fields to be updated :: 1.comment_Id 2.pinComment 3.Done Editing")
+        if varc == "1":
+            comment_Id1 = raw_input('comment_Id')
+        if varc == "2":
+            pinComment = raw_input('pinComment')
+        if varc == "3":
+            break
+    data1 = {"comment_Id": comment_Id1, "pinComment": pinComment}
+    headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments/" % (userID, boardName, pin_Id)
+    r = requests.put(url, data=json.dumps(data1),  headers=headers)
     print r.status_code
     print r.text
 		    

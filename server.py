@@ -237,21 +237,21 @@ def updatePin(user_id, boardName, pin_Id):
 
 
 #Create Comments (POST) or List all Comments(GET)
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pinName>/comments/', methods=['GET', 'POST'])
-def comments(user_id, boardName, pinName):
+@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/', methods=['GET', 'POST'])
+def comments(user_id, boardName, pin_Id):
     print
-    'Pin Name is: %s' % pinName
+    'Pin Name is: %s' % pin_Id
     if request.method == "GET":
         print
         "GET Request"
-        data = {'User': user_id, 'Board': boardName, 'Pins': pinName,
-                'Comments': db_util.get_comments(user_id, boardName, pinName)}
+        data = {'User': user_id, 'Board': boardName, 'Pins': pin_Id,
+                'Comments': db_util.get_comments(user_id, boardName, pin_Id)}
         resp = Response(json.dumps(data, indent=4), status=200, mimetype='application/json')
         return resp
     else:
         comment_details = request.get_json()
         pinComment = comment_details.get('pinComment')
-        comm = db_util.create_comment(user_id, boardName, pinName, pinComment)
+        comm = db_util.create_comment(user_id, boardName, pin_Id, pinComment)
         # Return List of Allowed Operations
         links = {'Links': [
             {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'GET'},
@@ -266,11 +266,11 @@ def comments(user_id, boardName, pinName):
 
 
 #GET a single Comment
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pinName>/comments/<int:comment_Id>/',
+@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
            methods=['GET'])
-def acomment(user_id, boardName, pinName, comment_Id):
+def acomment(user_id, boardName, pin_Id, comment_Id):
     print "Comment id is: %d" % comment_Id
-    ascomm = db_util.get_acomment(user_id, boardName, pinName, comment_Id)
+    ascomm = db_util.get_acomment(user_id, boardName, pin_Id, comment_Id)
 
     if ascomm == 0:
         abort(404)
@@ -282,7 +282,7 @@ def acomment(user_id, boardName, pinName, comment_Id):
         {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/', 'method': 'POST'}
     ]
 
-    js = {'User': user_id, 'Pin': pinName, 'Comment': ascomm, 'Links': links}
+    js = {'User': user_id, 'Pin': pin_Id, 'Comment': ascomm, 'Links': links}
     resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
     resp.headers['Link'] = 'http://127.0.0.1:5000'
     #print 'done'
@@ -290,29 +290,29 @@ def acomment(user_id, boardName, pinName, comment_Id):
 
 
 #Update or Delete Comments
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pinName>/comments/<int:comment_Id>/',
+@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
            methods=['PUT', 'DELETE'])
-def updateComment(user_id, boardName, pinName, comment_Id):
+def updateComment(user_id, boardName, pin_Id, comment_Id):
     if request.method == "PUT":
-        print
-        "PUT Request"
+        print "PUT Request"
         comment_details = request.get_json()
-        pinComment = comment_details.get('pinComment')
-        cpins = db_util.update_comment(user_id, boardName, pinName, comment_Id, pinComment)
+        pin_Id1 = comment_details.get('comment_Id',None)
+        pinComment = comment_details.get('pinComment',None)
+        cpins = db_util.update_comment(user_id, boardName, pin_Id, pin_Id1, comment_Id, pinComment)
         # Return List of Allowed Operations
         links = [
             {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'GET'},
             {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'DELETE'},
             {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/', 'method': 'POST'}
         ]
-        js = {'User': user_id, 'Pin': pinName, 'Comments': cpins, 'Links': links}
+        js = {'User': user_id, 'Pin': pin_Id, 'Comments': cpins, 'Links': links}
         resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
         resp.headers['Link'] = 'http://127.0.0.1:5000'
         return resp
     else:
         print
         'DELETE Request'
-        db_util.delete_comment(user_id, boardName, pinName, comment_Id)
+        db_util.delete_comment(user_id, boardName, pin_Id, comment_Id)
         #Return List of Allowed Operations
         links = {'Links': [
             {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/', 'method': 'POST'}
