@@ -14,7 +14,7 @@ def welcome_page():
 
 
 #Database to Enter Detais
-@app.route("/user/signUp", methods=['POST'])
+@app.route("/users/signUp/", methods=['POST'])
 def user_signup():
     user_details = request.get_json()
     firstName = user_details.get('firstName')
@@ -28,15 +28,14 @@ def user_signup():
     #return user_id
     if (user_id != "0"):
         links = [
-            {'url': '/user/login', 'method': 'POST'}
+            {'url': '/users/login/', 'method': 'POST'}
         ]
         js = {'Links': links, 'UserID': user_id}
         resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
         return resp
 
 
-@app.route('/user/login', methods=['POST'])
+@app.route('/users/login/', methods=['POST'])
 def login():
     user_logdetails = request.get_json()
     emailId = user_logdetails.get('emailId')
@@ -44,22 +43,21 @@ def login():
     mess = db_util.user_signin(emailId, password)
     if mess != "Email & Password don't match":
         links = [
-            {'url': '/user/{user_id}/boards', 'method': 'GET'},
-            {'url': '/user/{user_id}/boards', 'method': 'POST'},
+            {'url': '/users/%s/boards/' % mess, 'method': 'GET'},
+            {'url': '/users/%s/boards/' % mess, 'method': 'POST'},
         ]
         js = {'Links': links, 'UserID': mess}
         resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
     else:
         js = {'error message': "Email & Password don't match"}
         resp = Response(json.dumps(js, indent=2), status=400, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
         return resp
 
 
 #Create Boards(POST) or List all Boards(GET)
-@app.route('/user/<int:user_id>/boards/', methods=['POST', 'GET'])
+@app.route('/users/<int:user_id>/boards/', methods=['POST', 'GET'])
 def boards(user_id):
     print
     'User Id %d' % user_id
@@ -79,21 +77,19 @@ def boards(user_id):
 
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/{UserId}/boards/{boardName}', 'method': 'GET'},
-            {'url': '/users/{UserId}/boards/{boardName}', 'method': 'PUT'},
-            {'url': '/users/{UserId}/boards/{boardName}', 'method': 'DELETE'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/', 'method': 'POST'}
+            {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'GET'},
+            {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'PUT'},
+            {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'DELETE'},
+            {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'POST'}
         ]
 
         js = {'Links': links}
         resp = Response(json.dumps(js, indent = 2), status=201, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
-        #return "201 User Login Successful !! "
         return resp
 
 
 #GET a single Board
-@app.route('/user/<int:user_id>/boards/<string:boardName>/', methods=['GET'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/', methods=['GET'])
 def asboard(user_id, boardName):
     print
     'Board Name %s' % boardName
@@ -104,19 +100,18 @@ def asboard(user_id, boardName):
 
     # Return List of Allowed Operations
     links = [
-        {'url': '/users/{UserId}/boards/{boardName}', 'method': 'PUT'},
-        {'url': '/users/{UserId}/boards/{boardName}', 'method': 'DELETE'},
-        {'url': '/users/{UserId}/boards/{boardName}/pins/', 'method': 'POST'}
+        {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'PUT'},
+        {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'DELETE'},
+        {'url': '/users/%d/boards/%s/pins' % (user_id,boardName), 'method': 'POST'}
     ]
     js = {'Board': asboard, 'Links': links}
     resp = Response(json.dumps(js, indent=2), status=200, mimetype='application/json')
-    resp.headers['Link'] = 'http://127.0.0.1:5000'
     #print 'done'
     return resp
 
 
 #Update or Delete Board
-@app.route('/user/<int:user_id>/boards/<string:boardName>/', methods=['PUT', 'DELETE'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/', methods=['PUT', 'DELETE'])
 def updateBoard(user_id, boardName):
     if request.method == "PUT":
         print "PUT Request"
@@ -134,7 +129,7 @@ def updateBoard(user_id, boardName):
         ]
         js = {'Board': sboards, 'Links': links}
         resp = Response(json.dumps(js, indent=2), status=200, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
     else:
         print
@@ -145,12 +140,12 @@ def updateBoard(user_id, boardName):
             {'url': '/users/{UserId}/boards/', 'method': 'POST'}
         ]}
         resp = Response(json.dumps(links), status=200, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
 
 
 #Create Pins (POST) or List all Pins(GET)
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/', methods=['GET', 'POST'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/', methods=['GET', 'POST'])
 def pins(user_id, boardName):
     print
     'Board name is: %s' % boardName
@@ -175,12 +170,12 @@ def pins(user_id, boardName):
 
         js = {'Created Pin': spins, 'Links': links}
         resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
 
 
 #GET a single Pin
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/', methods=['GET'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/', methods=['GET'])
 def apin(user_id, boardName, pin_Id):
     print "Pin id is: %d" % pin_Id
     aspin = db_util.get_apin(user_id, boardName, pin_Id)
@@ -197,13 +192,13 @@ def apin(user_id, boardName, pin_Id):
 
     js = {'Links': links, 'Pin': aspin}
     resp = Response(json.dumps(js, indent=2), status=200, mimetype='application/json')
-    resp.headers['Link'] = 'http://127.0.0.1:5000'
+    
     #print 'done'
     return resp
 
 
 #Update or Delete Pins
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/', methods=['PUT', 'DELETE'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/', methods=['PUT', 'DELETE'])
 def updatePin(user_id, boardName, pin_Id):
     if request.method == "PUT":
         print
@@ -221,7 +216,7 @@ def updatePin(user_id, boardName, pin_Id):
         ]
         js = {'Pins': upins, 'Links': links}
         resp = Response(json.dumps(js, indent=2), status=200, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
     else:
         print
@@ -232,12 +227,12 @@ def updatePin(user_id, boardName, pin_Id):
             {'url': '/users/{UserId}/boards/{boardName}/pins/', 'method': 'POST'}
         ]}
         resp = Response(json.dumps(links), status=200, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
 
 
 #Create Comments (POST) or List all Comments(GET)
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/', methods=['GET', 'POST'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/', methods=['GET', 'POST'])
 def comments(user_id, boardName, pin_Id):
     print
     'Pin Name is: %s' % pin_Id
@@ -261,12 +256,12 @@ def comments(user_id, boardName, pin_Id):
 
         js = {'Created Comment': comm, 'Links': links}
         resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
 
 
 #GET a single Comment
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
            methods=['GET'])
 def acomment(user_id, boardName, pin_Id, comment_Id):
     print "Comment id is: %d" % comment_Id
@@ -284,13 +279,13 @@ def acomment(user_id, boardName, pin_Id, comment_Id):
 
     js = {'User': user_id, 'Pin': pin_Id, 'Comment': ascomm, 'Links': links}
     resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
-    resp.headers['Link'] = 'http://127.0.0.1:5000'
+    
     #print 'done'
     return resp
 
 
 #Update or Delete Comments
-@app.route('/user/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
            methods=['PUT', 'DELETE'])
 def updateComment(user_id, boardName, pin_Id, comment_Id):
     if request.method == "PUT":
@@ -307,7 +302,7 @@ def updateComment(user_id, boardName, pin_Id, comment_Id):
         ]
         js = {'User': user_id, 'Pin': pin_Id, 'Comments': cpins, 'Links': links}
         resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
     else:
         print
@@ -318,9 +313,9 @@ def updateComment(user_id, boardName, pin_Id, comment_Id):
             {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/', 'method': 'POST'}
         ]}
         resp = Response(json.dumps(links), status=200, mimetype='application/json')
-        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        
         return resp
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)

@@ -2,7 +2,7 @@ import json, requests
 from flask import request
 
 userID = 0
-
+global host
 
 def signUp():
     #data1 = {'firstName':'Priyanka', 'lastName':'Deo', 'emailId':'deo.priyanka02@gmail.com', 'password':'dfer'}
@@ -11,12 +11,13 @@ def signUp():
     emailId = raw_input('email ')
     password = raw_input('password ')
     data1 = {'firstName':firstName, 'lastName':lastName, 'emailId':emailId, 'password':password}
-    url = "http://127.0.0.1:5000/user/signUp"
+    url = "http://127.0.0.1:5000/users/signUp/"
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
     print r.text    
     resp = json.loads(r.text)
+    #print r.text.Links
     #print resp['hello']
     url_data = []
     meth_data = []
@@ -34,7 +35,7 @@ def signIn():
     email = raw_input('email ')
     password = raw_input('password ')
     data1 = {'emailId':email, 'password':password}
-    url = "http://127.0.0.1:5000/user/login"
+    url = "http://127.0.0.1:5000/users/login/"
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
@@ -55,7 +56,7 @@ def createBoard():
     category = raw_input('category ')
     isPrivate = raw_input('isPrivate ')
     data1 = {"boardName":boardName,"boardDesc":boardDesc,"category": category,"isPrivate": isPrivate}
-    url = "http://127.0.0.1:5000/user/%s/boards/" % userID
+    url = "http://192.168.0.100:5000/users/%s/boards/" % userID
     print "Create Board ::",url
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
@@ -63,7 +64,7 @@ def createBoard():
     print r.text
 
 def getBoards():
-    url = "http://127.0.0.1:5000/user/%s/boards/" % userID
+    url = "http://127.0.0.1:5000/users/%s/boards/" % userID
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.get(url, headers = headers)
     print r.status_code
@@ -72,7 +73,8 @@ def getBoards():
 def getSingleBoard():
     print "Enter Board Name to be returned"
     boardName = raw_input('boardName ')
-    url = "http://127.0.0.1:5000/user/%s/boards/%s" % (userID,boardName)
+    url = "http://" + host + "users/%s/boards/%s" % (userID,boardName)
+    print "#######", url
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.get(url, headers = headers)
     print r.status_code
@@ -83,7 +85,7 @@ def deleteBoard():
     print "Enter Board Name to be deleted ::"
     boardName = raw_input('boardName ')
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/" % (userID,boardName)
+    url = "http://127.0.0.1:5000/users/%s/boards/%s/" % (userID,boardName)
     r = requests.delete(url, headers = headers)
     print r.status_code
     print r.text
@@ -110,7 +112,7 @@ def updateBoard():
             break
     data1 = {"boardName":boardName1,"boardDesc":boardDesc,"category": category,"isPrivate": isPrivate}
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/" % (userID,boardName)
+    url = "http://127.0.0.1:5000/users/%s/boards/%s/" % (userID,boardName)
     r = requests.put(url, data=json.dumps(data1) ,headers = headers)
     print r.status_code
     print r.text
@@ -124,9 +126,9 @@ def createPins():
     #boardDesc = raw_input('boardDesc ')
     #category = raw_input('category ')
     #isPrivate = raw_input('isPrivate ')
-    #'/user/<int:user_id>/boards/<string:boardName>/pins/
+    #'/users/<int:user_id>/boards/<string:boardName>/pins/
     data1 = {"pinName" : "Bucketlist - Summer clothes shopping - check :)" ,"pinImage" : "wardrobe.jpg","pinDesc" : "Awesome Summer discounts at Paragon Mall!!Check it out"}
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/" % (userID,boardName)
+    url = "http://"+ host + "/users/%s/boards/%s/pins/" % (userID,boardName)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
@@ -137,7 +139,7 @@ def getSinglePin():
     print "Enter Board Name to be returned"
     boardName = raw_input('boardName ')
     pinId = raw_input('pinNum ')
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/" % (userID,boardName, pinId)
+    url = "http://"+host+"/users/%s/boards/%s/pins/%s/" % (userID,boardName, pinId)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.get(url, headers = headers)
     print r.status_code
@@ -147,7 +149,7 @@ def getPins():
     global userID
     print "Enter Board Name to be returned"
     boardName = raw_input('boardName ')
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/" % (userID,boardName)
+    url = "http://127.0.0.1:5000/users/%s/boards/%s/pins/" % (userID,boardName)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.get(url, headers = headers)
     print r.status_code
@@ -158,7 +160,7 @@ def deletePins():
     print "Enter Board Name to be returned"
     boardName = raw_input('boardName ')
     pinId = raw_input('pinNum ')
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/" % (userID,boardName,pinId)
+    url = "http://127.0.0.1:5000/users/%s/boards/%s/pins/%s/" % (userID,boardName,pinId)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.delete(url, headers = headers)
     print r.status_code
@@ -172,7 +174,7 @@ def updatePins():
     "pinImage" : "bikinibabe.jpg",
     "pinDesc" : "Have been waiting all year to show dese off!! :P"
     }
-    url = "http://127.0.0.1:5000/user/boards"
+    url = "http://127.0.0.1:5000/users/boards"
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.put(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
@@ -205,7 +207,7 @@ def updateComment():
             break
     data1 = {"comment_Id": comment_Id1, "pinComment": pinComment}
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments/" % (userID, boardName, pin_Id)
+    url = "http://127.0.0.1:5000/users/%s/boards/%s/pins/%s/comments/" % (userID, boardName, pin_Id)
     r = requests.put(url, data=json.dumps(data1),  headers=headers)
     print r.status_code
     print r.text
@@ -215,7 +217,7 @@ def deleteComment():
     pinId = raw_input("Enter pin id")
     commentId = raw_input("Enter comment id")
     #data1 = {"Comment":"this my comment"}
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments/%s" %(userID, boardname, pinId, commentId)
+    url = "http://127.0.0.1:5000/users/%s/boards/%s/pins/%s/comments/%s" %(userID, boardname, pinId, commentId)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.delete(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
@@ -224,7 +226,7 @@ def deleteComment():
 def getComment():
     boardname = raw_input("Enter board name")
     pinId = raw_input("Enter pin id")
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments" % (userID, boardname, pinId)
+    url = "http://127.0.0.1:5000/users/%s/boards/%s/pins/%s/comments" % (userID, boardname, pinId)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.get(url, headers = headers)
     print r.status_code
@@ -234,7 +236,7 @@ def createComment():
     #data1 = {"Comment":"this my comment"}
     boardname = raw_input("Enter board name")
     pinId = raw_input("Enter pin id")
-    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments" % (userID, boardname, pinId)
+    url = "http://127.0.0.1:5000/users/%s/boards/%s/pins/%s/comments" % (userID, boardname, pinId)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
@@ -324,7 +326,7 @@ def main_options():
         exit()
 
 if __name__ == '__main__':
-
+    host = raw_input("The host id: ")
     while True:
         var = raw_input("Enter an option 1. SignUp 2.SignIn")
         if var == '1':

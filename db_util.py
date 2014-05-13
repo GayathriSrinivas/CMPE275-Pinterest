@@ -1,5 +1,6 @@
 from flask import Flask
 from couchdb.client import Server
+from couchdb.mapping import Document, IntegerField, TextField
 from flask import Response
 #from flask import couchdb
 
@@ -7,7 +8,7 @@ from flask import Response
 import json
 
 app = Flask(__name__)
-
+flag = True
 
 def init_boards():
     """
@@ -24,6 +25,26 @@ def init_boards():
 
 rec = 0
 
+class UserIdCount(Document):
+    doc_type = TextField()
+    count = IntegerField()
+
+def autoIncrementUserId():
+    
+    db = init_boards()
+    view_find_doc = '''
+      function(doc) {
+          if (doc.doc_type == "UserIdCount") {
+            emit(doc.count, null);
+          }
+        }
+    '''
+    doc_id = db.query(view_find_doc).rows[0].id
+    doc = db.get(doc_id)
+    count = doc['count']
+    doc['count'] = count + 1
+    db.update([doc])
+    return doc['count']
 
 def autoIncrement():
     global rec
@@ -35,11 +56,37 @@ def autoIncrement():
         rec += pint
     return rec
 
+def checkForFirstDoc():
+    db = init_boards()
+    view_find_doc = '''
+      function(doc) {
+          if (doc.doc_type == "UserIdCount") {
+            emit(doc.count, null);
+          }
+        }
+    '''
+    print "before view is None"
+    count_of_users = '''
+        function (keys, values, rereduce) {
+            return sum(values);
+        }
+        '''
+    for row in db.query(view_find_doc, count_of_users):
+        return row.value
+
 
 #User Sign up
 def user_signup(firstName, lastName, emailId, password):
+    global flag
     print "User Signup"
     db = init_boards()
+    doc_count = checkForFirstDoc()
+    if (doc_count is None):
+        if (flag == True):
+            print "inside flag == true"
+            id_count = UserIdCount(doc_type="UserIdCount", count=0)
+            id_count.store(db)
+            flag = False
     for docid in db:
         user = db.get(docid)
         if user.get('emailId',None) == emailId:
@@ -47,10 +94,9 @@ def user_signup(firstName, lastName, emailId, password):
             return user['user_id']
     print "New User"
     doc = {'firstName': firstName, 'lastName': lastName, 'emailId': emailId, 'password': password,
-           'user_id': autoIncrement(), 'boards': []}
+           'user_id': autoIncrementUserId(), 'boards': []}
     db.save(doc)
     return doc['user_id']
-
 
 #User Sign in
 def user_signin(emailId, password):
