@@ -107,7 +107,6 @@ def update_board(user_id, boardName,boardName1, boardDesc, category, isPrivate):
     print "Update a Board"
     temp = []
     db = init_boards()
-    print "user_id",user_id
     doc = get_doc_for_user_id(user_id)
     list_ub = doc['boards']
     print "list_ub",list_ub,
@@ -204,48 +203,6 @@ def delete_pin(user_id, boardName, pin_Id):
     return
 
 
-def create_comment(user_id, boardName, pinName, pinComment):
-    global list_upd
-    print
-    "Create Comment"
-    db = init_boards()
-    # Need to find document of given user - use View to find document ID for corresponding user
-    doc = get_doc_for_user_id(user_id)
-    comment = {'comment_Id': autoIncrement(), 'pinComment': pinComment}
-    list_boards = doc['boards']
-    for x in list_boards:
-        if x['boardName'] == boardName:
-            list_upd = x['pins']
-            for y in list_upd:
-                if y['pinName'] == pinName:
-                    y['comments'].append(comment)
-    db.update([doc])
-    return comment
-
-
-def get_comments(user_id, boardName, pinName):
-    global list_comments
-    print
-    "Get List of all comments for a Pin"
-    list_boards = get_doc_for_user_id(user_id)['boards']
-    for x in list_boards:
-        if x['boardName'] == boardName:
-            list_pins = x['pins']
-            for y in list_pins:
-                if y['pinName'] == pinName:
-                    list_comments = y['comments']
-    return list_comments
-
-
-def get_acomment(user_id, boardName, pinName, comment_Id):
-    print "Get a comment by id %d" % comment_Id
-    list_c = get_comments(user_id, boardName, pinName)
-    for x in list_c:
-        if x['comment_Id'] == comment_Id:
-            return x
-    return 0
-
-
 def update_comment(user_id, boardName, pinName, comment_Id, pinComment):
     global list_com
     print "Update a comment"
@@ -266,18 +223,33 @@ def update_comment(user_id, boardName, pinName, comment_Id, pinComment):
     return ucomm
 
 
-def delete_comment(user_id, boardName, pinName, comment_Id):
-    print "Delete a Comment"
-    db = init_boards()
-    doc = get_doc_for_user_id(user_id)
-    list_b = doc['boards']
-    for x in list_b:
-        if x['boardName'] == boardName:
-            list_p = x['pins']
-            for y in list_p:
-                if y['pinName'] == pinName:
-                    list_comm = y['comments']
-                new_list = [z for z in list_comm if not z['comment_Id'] == comment_Id]
-                y['comments'] = new_list
-    db.update([doc])
-    return
+def deleteComment():
+    boardname = raw_input("Enter board name")
+    pinId = raw_input("Enter pin id")
+    commentId = raw_input("Enter comment id")
+    #data1 = {"Comment":"this my comment"}
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments/%s" %(userID, boardname, pinId, commentId)
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.delete(url, data=json.dumps(data1),  headers = headers)
+    print r.status_code
+    print r.text
+
+def getComment():
+    boardname = raw_input("Enter board name")
+    pinId = raw_input("Enter pin id")
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments" % (userID, boardname, pinId)
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.get(url, headers = headers)
+    print r.status_code
+    print r.text
+    
+def createComment():
+    #data1 = {"Comment":"this my comment"}
+    boardname = raw_input("Enter board name")
+    pinId = raw_input("Enter pin id")
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments" % (userID, boardname, pinId)
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.post(url, data=json.dumps(data1),  headers = headers)
+    print r.status_code
+    print r.text
+

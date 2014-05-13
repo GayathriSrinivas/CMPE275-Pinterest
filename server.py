@@ -51,7 +51,11 @@ def login():
         resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
         resp.headers['Link'] = 'http://127.0.0.1:5000'
         return resp
-    return "Email & Password don't match"
+    else:
+        js = {'error message': "Email & Password don't match"}
+        resp = Response(json.dumps(js, indent=2), status=400, mimetype='application/json')
+        resp.headers['Link'] = 'http://127.0.0.1:5000'
+        return resp
 
 
 #Create Boards(POST) or List all Boards(GET)
@@ -117,7 +121,6 @@ def updateBoard(user_id, boardName):
     if request.method == "PUT":
         print "PUT Request"
         board_details = request.get_json()
-
         boardName1 = board_details.get('boardName',None)
         boardDesc = board_details.get('boardDesc',None)
         category = board_details.get('category',None)

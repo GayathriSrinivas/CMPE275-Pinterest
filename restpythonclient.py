@@ -39,15 +39,20 @@ def signIn():
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
     print r.text
-    resp =  json.loads(r.text)
-    print resp["UserID"]
-    userID = resp["UserID"]
+    if (r.status_code == 201):
+        resp =  json.loads(r.text)
+        print resp["UserID"]
+        userID = resp["UserID"]
+        return userID
+    else:
+        print "Invalid email and password"
+        return None
 
 def createBoard():
     global userID
     boardName = raw_input('boardName ')
     boardDesc = raw_input('boardDesc ')
-    category = raw_input('email ')
+    category = raw_input('category ')
     isPrivate = raw_input('isPrivate ')
     data1 = {"boardName":boardName,"boardDesc":boardDesc,"category": category,"isPrivate": isPrivate}
     url = "http://127.0.0.1:5000/user/%s/boards/" % userID
@@ -112,15 +117,61 @@ def updateBoard():
 		    
 
 def createPins():
+    global userID
+    print "Enter Board Name to be updated ::"
+    #boardName = raw_input('boardName ')
+    #pinName = raw_input('pinName ')
+    #boardDesc = raw_input('boardDesc ')
+    #category = raw_input('category ')
+    #isPrivate = raw_input('isPrivate ')
+    #'/user/<int:user_id>/boards/<string:boardName>/pins/
     data1 = {"pinName" : "Bucketlist - Summer clothes shopping - check :)" ,"pinImage" : "wardrobe.jpg","pinDesc" : "Awesome Summer discounts at Paragon Mall!!Check it out"}
-    url = "http://127.0.0.1:5000/user/boards"
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/" % (userID,boardName)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
     print r.text
 
+def getSinglePin():
+    global userID
+    print "Enter Board Name to be returned"
+    boardName = raw_input('boardName ')
+    pinId = raw_input('pinNum ')
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/" % (userID,boardName, pinId)
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.get(url, headers = headers)
+    print r.status_code
+    print r.text
+
+def getPins():
+    global userID
+    print "Enter Board Name to be returned"
+    boardName = raw_input('boardName ')
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/" % (userID,boardName)
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.get(url, headers = headers)
+    print r.status_code
+    print r.text
+
+def deletePins():
+    global userID
+    print "Enter Board Name to be returned"
+    boardName = raw_input('boardName ')
+    pinId = raw_input('pinNum ')
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/" % (userID,boardName,pinId)
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.delete(url, headers = headers)
+    print r.status_code
+    print r.text
+
+
 def updatePins():
-    data1 = {"pinName" : "Bucketlist - Summer clothes shopping - check :)" ,"pinImage" : "wardrobe.jpg","pinDesc" : "Awesome Summer discounts at Paragon Mall!!Check it out"}
+    #data1 = {"pinName" : "Bucketlist - Summer clothes shopping - check :)" ,"pinImage" : "wardrobe.jpg","pinDesc" : "Awesome Summer discounts at Paragon Mall!!Check it out"}
+    data1 = {
+    "pinName" : "Bring out the bikinis!!!!" ,
+    "pinImage" : "bikinibabe.jpg",
+    "pinDesc" : "Have been waiting all year to show dese off!! :P"
+    }
     url = "http://127.0.0.1:5000/user/boards"
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.put(url, data=json.dumps(data1),  headers = headers)
@@ -136,22 +187,6 @@ def updatePins():
     #url = "https://www.toggl.com/api/v6/" + data_description + ".json"
     #response = requests.delete(url, data=json.dumps(payload), headers=headers,auth=HTTPBasicAuth(toggl_token, 'api_token'))
 
-def deletePins():
-    data1 = {"pinName" : "Bucketlist - Summer clothes shopping - check :)" ,"pinImage" : "wardrobe.jpg","pinDesc" : "Awesome Summer discounts at Paragon Mall!!Check it out"}
-    url = "http://127.0.0.1:5000/user/boards"
-    headers = {'Content-type':'application/json', 'Accept':'text/json'}
-    r = requests.delete(url, data=json.dumps(data1),  headers = headers)
-    print r.status_code
-    print r.text
-
-
-def createComment():
-    data1 = {"Comment":"this my comment"}
-    url = "http://127.0.0.1:5000/user/"
-    headers = {'Content-type':'application/json', 'Accept':'text/json'}
-    r = requests.post(url, data=json.dumps(data1),  headers = headers)
-    print r.status_code
-    print r.text
 
 def updateComment():
     data1 = {"Comment":"this my comment"}
@@ -162,10 +197,32 @@ def updateComment():
     print r.text
 		    
 def deleteComment():
-    data1 = {"Comment":"this my comment"}
-    url = "http://127.0.0.1:5000/user/boards"
+    boardname = raw_input("Enter board name")
+    pinId = raw_input("Enter pin id")
+    commentId = raw_input("Enter comment id")
+    #data1 = {"Comment":"this my comment"}
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments/%s" %(userID, boardname, pinId, commentId)
     headers = {'Content-type':'application/json', 'Accept':'text/json'}
     r = requests.delete(url, data=json.dumps(data1),  headers = headers)
+    print r.status_code
+    print r.text
+
+def getComment():
+    boardname = raw_input("Enter board name")
+    pinId = raw_input("Enter pin id")
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments" % (userID, boardname, pinId)
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.get(url, headers = headers)
+    print r.status_code
+    print r.text
+
+def createComment():
+    #data1 = {"Comment":"this my comment"}
+    boardname = raw_input("Enter board name")
+    pinId = raw_input("Enter pin id")
+    url = "http://127.0.0.1:5000/user/%s/boards/%s/pins/%s/comments" % (userID, boardname, pinId)
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.post(url, data=json.dumps(data1),  headers = headers)
     print r.status_code
     print r.text
 
@@ -189,26 +246,81 @@ def perform_operation(pdId, url, meth):		#Function to store required items info
     filtered_data[pdId] = url.replace("\\", "")	#Price of required items
     meth_data[pdId] = meth.replace("\\", "")	#Urls of the required items
 """
+def start_boards():
+    while True:
+        option = raw_input("Enter an option 1.boards 2.getBoards 3.getSingleBoard 4.DeleteBoards 5.UpdateBoards 6.Exit")
+        if option == '1':
+            print "createBoard"
+            createBoard()
+        if option == '2':
+            print "getBoards"
+            getBoards()
+        if option == '3':
+            getSingleBoard()
+        if option == '4':
+            deleteBoard()
+        if option == '5':
+            updateBoard()
+        if option == '6':
+            main_options()
+
+def start_pins():
+    while True:
+        option = raw_input("Enter an option 1.pins 2.getPins 3.getSinglePin 4.DeletePin 5.UpdatePin 6.Exit")
+        if option == '1':
+            print "createPin"
+            createPins()
+        if option == '2':
+            print "getpins"
+            getPins()
+        if option == '3':
+            getSinglePin()
+        if option == '4':
+            deletePins()
+        if option == '5':
+            updatePins()
+        if option == '6':
+            main_options()
+     
+def start_comments():
+    while True:
+        option = raw_input("Enter an option 1.comments 2.getcomments 3.DeleteComment 4.UpdateComment 5.Exit")
+        if option == '1':
+            print "createBoard"
+            createComment()
+        if option == '2':
+            print "getBoards"
+            getComment()
+        if option == '3':
+            deleteComment()
+        if option == '4':
+            updateComment()
+        if option == '5':
+            main_options()
+
+def main_options():
+    opt = raw_input("Enter an option 1. Boards 2.Pins 3. Comments 4.Exit")
+    if opt == '1':
+        start_boards()
+    if opt == '2':
+        start_pins()        
+    if opt == '3':
+        start_comments()
+    else:
+        exit()
+
 if __name__ == '__main__':
 
     while True:
-        var = raw_input("Enter an option 1. SignUp 2.SignIn 3.boards 4.getBoards 5.getSingleBoard 6.DeleteBoards")
+        var = raw_input("Enter an option 1. SignUp 2.SignIn")
         if var == '1':
             print "signUp"
             signUp()
+            var = '2'
         if var == '2':
             print "signIn"
-            signIn()
-        if var == '3':
-            print "createBoard"
-            createBoard()
-        if var == '4':
-            print "getBoards"
-            getBoards()
-        if var == '5':
-            getSingleBoard()
-        if var == '6':
-            deleteBoard()
-        if var == '7':
-            updateBoard()
+            code = signIn()
+        if code:
+            main_options()
+
 
