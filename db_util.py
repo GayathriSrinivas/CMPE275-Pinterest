@@ -1,14 +1,14 @@
 from flask import Flask
+
 from couchdb.client import Server
 from couchdb.mapping import Document, IntegerField, TextField
-from flask import Response
+
 #from flask import couchdb
 
 
-import json
-
 app = Flask(__name__)
 flag = True
+
 
 def init_boards():
     """
@@ -25,12 +25,13 @@ def init_boards():
 
 rec = 0
 
+
 class UserIdCount(Document):
     doc_type = TextField()
     count = IntegerField()
 
+
 def autoIncrementUserId():
-    
     db = init_boards()
     view_find_doc = '''
       function(doc) {
@@ -46,6 +47,7 @@ def autoIncrementUserId():
     db.update([doc])
     return doc['count']
 
+
 def autoIncrement():
     global rec
     pstrt = 1
@@ -55,6 +57,7 @@ def autoIncrement():
     else:
         rec += pint
     return rec
+
 
 def checkForFirstDoc():
     db = init_boards()
@@ -89,7 +92,7 @@ def user_signup(firstName, lastName, emailId, password):
             flag = False
     for docid in db:
         user = db.get(docid)
-        if user.get('emailId',None) == emailId:
+        if user.get('emailId', None) == emailId:
             print "User already Registered. Please proceed to SignIn"
             return user['user_id']
     print "New User"
@@ -98,13 +101,14 @@ def user_signup(firstName, lastName, emailId, password):
     db.save(doc)
     return doc['user_id']
 
+
 #User Sign in
 def user_signin(emailId, password):
     print "User_Sign_in"
     db = init_boards()
     for docid in db:
         user = db.get(docid)
-        if user.get('emailId',None) == emailId and user.get('password',None) == password:
+        if user.get('emailId', None) == emailId and user.get('password', None) == password:
             return user['user_id']
     return "Email & Password don't match"
 
@@ -149,25 +153,24 @@ def get_aboard(user_id, boardName):
     return 0
 
 
-def update_board(user_id, boardName,boardName1, boardDesc, category, isPrivate):
+def update_board(user_id, boardName, boardName1, boardDesc, category, isPrivate):
     print "Update a Board"
     temp = []
     db = init_boards()
     doc = get_doc_for_user_id(user_id)
     list_ub = doc['boards']
-    print "list_ub",list_ub,
+    print "list_ub", list_ub,
     for ind, x in enumerate(list_ub):
         if x['boardName'] == boardName:
             temp = x
-            if(boardName1 != None):    
-                temp["boardName"] = boardName1
-            if(boardDesc != None):
-                temp["boardDesc"] = boardDesc
-            if(category != None):    
-                temp["category"] = category
-            if(isPrivate != None):
-                temp["isPrivate"] = isPrivate
-            print "temp::: ",temp
+            if boardName1 is not None:
+                temp['boardName'] = boardName1
+            if boardDesc is not None:
+                temp['boardDesc'] = boardDesc
+            if category is not None:
+                temp['category'] = category
+            if isPrivate is not None:
+                temp['isPrivate'] = isPrivate
             list_ub[ind] = temp
     db.update([doc])
     return temp
@@ -176,6 +179,7 @@ def update_board(user_id, boardName,boardName1, boardDesc, category, isPrivate):
 def delete_board(user_id, boardName):
     print "Delete a Board"
     db = init_boards()
+    # Need to find document of given user - use View to find document ID for corresponding user
     doc = get_doc_for_user_id(user_id)
     list_up = doc['boards']
     new_list = [x for x in list_up if not x['boardName'] == boardName]
@@ -185,8 +189,7 @@ def delete_board(user_id, boardName):
 
 
 def create_pin(user_id, boardName, pinName, pinImage, pinDesc):
-    print
-    "Create Pin"
+    print "Create Pin"
     db = init_boards()
     # Need to find document of given user - use View to find document ID for corresponding user
     doc = get_doc_for_user_id(user_id)
@@ -200,8 +203,8 @@ def create_pin(user_id, boardName, pinName, pinImage, pinDesc):
 
 
 def get_pins(user_id, boardName):
-    print
-    "Get List of all pins"
+    list_pins = []
+    print "Get List of all pins"
     list_boards = get_doc_for_user_id(user_id)['boards']
     for x in list_boards:
         if x['boardName'] == boardName:
@@ -210,7 +213,7 @@ def get_pins(user_id, boardName):
 
 
 def get_apin(user_id, boardName, pin_Id):
-    print "Get a pin by id %d" % user_id
+    print "Get a pin"
     list_p = get_pins(user_id, boardName)
     for x in list_p:
         if x['pin_Id'] == pin_Id:
@@ -218,11 +221,10 @@ def get_apin(user_id, boardName, pin_Id):
     return 0
 
 
-def update_pin(user_id, boardName, pin_Id, pinName, pinImage, pinDesc):
-    global list_up
+def update_pin(user_id, boardName, pin_Id, pin_Id1, pinName, pinImage, pinDesc):
     print "Update a pin"
+    temp = []
     db = init_boards()
-    upin = {'pin_Id': pin_Id, 'pinName': pinName, 'pinImage': pinImage, 'pinDesc': pinDesc}
     doc = get_doc_for_user_id(user_id)
     list_b = doc['boards']
     for x in list_b:
@@ -230,9 +232,18 @@ def update_pin(user_id, boardName, pin_Id, pinName, pinImage, pinDesc):
             list_up = x['pins']
             for ind, y in enumerate(list_up):
                 if y['pin_Id'] == pin_Id:
-                    list_up[ind] = upin
+                    temp = y
+                    if pin_Id1 is not None:
+                        temp['pin_Id'] = pin_Id1
+                    if pinName is not None:
+                        temp['pinName'] = pinName
+                    if pinImage is not None:
+                        temp['pinImage'] = pinImage
+                    if pinDesc is not None:
+                        temp['pinDesc'] = pinDesc
+                    list_up[ind] = temp
     db.update([doc])
-    return upin
+    return temp
 
 
 def delete_pin(user_id, boardName, pin_Id):
@@ -250,9 +261,7 @@ def delete_pin(user_id, boardName, pin_Id):
 
 
 def create_comment(user_id, boardName, pin_Id, pinComment):
-    global list_upd
-    print
-    "Create Comment"
+    print "Create Comment"
     db = init_boards()
     # Need to find document of given user - use View to find document ID for corresponding user
     doc = get_doc_for_user_id(user_id)
@@ -269,9 +278,8 @@ def create_comment(user_id, boardName, pin_Id, pinComment):
 
 
 def get_comments(user_id, boardName, pin_Id):
-    global list_comments
-    print
-    "Get List of all comments for a Pin"
+    list_comments = []
+    print "Get List of all comments for a Pin"
     list_boards = get_doc_for_user_id(user_id)['boards']
     for x in list_boards:
         if x['boardName'] == boardName:
@@ -293,7 +301,7 @@ def get_acomment(user_id, boardName, pin_Id, comment_Id):
 
 def update_comment(user_id, boardName, pin_Id, comment_Id, comment_Id1, pinComment):
     print "Update a comment"
-    temp =[]
+    temp = []
     db = init_boards()
     doc = get_doc_for_user_id(user_id)
     list_b = doc['boards']
@@ -307,12 +315,13 @@ def update_comment(user_id, boardName, pin_Id, comment_Id, comment_Id1, pinComme
                         if z['comment_Id'] == comment_Id:
                             temp = z
                             if comment_Id1 is not None:
-                                temp["comment_Id"] = comment_Id1
+                                temp['comment_Id'] = comment_Id1
                             if pinComment is not None:
-                                temp["pinComment"] = pinComment
+                                temp['pinComment'] = pinComment
                             list_com[ind] = temp
     db.update([doc])
     return temp
+
 
 def delete_comment(user_id, boardName, pin_Id, comment_Id):
     print "Delete a Comment"

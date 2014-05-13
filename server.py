@@ -3,7 +3,9 @@ from flask import request
 from flask import Response
 from flask import abort
 import json
+
 import db_util
+
 
 app = Flask(__name__)
 
@@ -13,7 +15,7 @@ def welcome_page():
     return "Welcome to Pinterest !!!"
 
 
-#Database to Enter Detais
+#Database to Enter Details
 @app.route("/users/signUp/", methods=['POST'])
 def user_signup():
     user_details = request.get_json()
@@ -26,7 +28,7 @@ def user_signup():
     print user_id
 
     #return user_id
-    if (user_id != "0"):
+    if user_id != "0":
         links = [
             {'url': '/users/login/', 'method': 'POST'}
         ]
@@ -48,7 +50,6 @@ def login():
         ]
         js = {'Links': links, 'UserID': mess}
         resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
-        
         return resp
     else:
         js = {'error message': "Email & Password don't match"}
@@ -59,8 +60,7 @@ def login():
 #Create Boards(POST) or List all Boards(GET)
 @app.route('/users/<int:user_id>/boards/', methods=['POST', 'GET'])
 def boards(user_id):
-    print
-    'User Id %d' % user_id
+    print 'User Id %d' % user_id
     if request.method == "GET":
         print
         "GET Request"
@@ -77,22 +77,20 @@ def boards(user_id):
 
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'GET'},
-            {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'PUT'},
-            {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'DELETE'},
-            {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'POST'}
+            {'url': '/users/%d/boards/%s/' % (user_id, boardName), 'method': 'GET'},
+            {'url': '/users/%d/boards/%s/' % (user_id, boardName), 'method': 'PUT'},
+            {'url': '/users/%d/boards/%s/' % (user_id, boardName), 'method': 'DELETE'},
+            {'url': '/users/%d/boards/%s/pins/' % (user_id, boardName), 'method': 'POST'}
         ]
-
-        js = {'Links': links}
-        resp = Response(json.dumps(js, indent = 2), status=201, mimetype='application/json')
+        js = {'Boards': sboards, 'Links': links}
+        resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
         return resp
 
 
 #GET a single Board
 @app.route('/users/<int:user_id>/boards/<string:boardName>/', methods=['GET'])
 def asboard(user_id, boardName):
-    print
-    'Board Name %s' % boardName
+    print 'Board Name %s' % boardName
     asboard = db_util.get_aboard(user_id, boardName)
 
     if asboard == 0:
@@ -100,13 +98,12 @@ def asboard(user_id, boardName):
 
     # Return List of Allowed Operations
     links = [
-        {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'PUT'},
-        {'url': '/users/%d/boards/%s' % (user_id,boardName), 'method': 'DELETE'},
-        {'url': '/users/%d/boards/%s/pins' % (user_id,boardName), 'method': 'POST'}
+        {'url': '/users/%d/boards/%s/' % (user_id, boardName), 'method': 'PUT'},
+        {'url': '/users/%d/boards/%s/' % (user_id, boardName), 'method': 'DELETE'},
+        {'url': '/users/%d/boards/%s/pins/' % (user_id, boardName), 'method': 'POST'}
     ]
     js = {'Board': asboard, 'Links': links}
     resp = Response(json.dumps(js, indent=2), status=200, mimetype='application/json')
-    #print 'done'
     return resp
 
 
@@ -116,42 +113,37 @@ def updateBoard(user_id, boardName):
     if request.method == "PUT":
         print "PUT Request"
         board_details = request.get_json()
-        boardName1 = board_details.get('boardName',None)
-        boardDesc = board_details.get('boardDesc',None)
-        category = board_details.get('category',None)
+        boardName1 = board_details.get('boardName', None)
+        boardDesc = board_details.get('boardDesc', None)
+        category = board_details.get('category', None)
         isPrivate = board_details.get('isPrivate', None)
-        sboards = db_util.update_board(user_id, boardName,boardName1, boardDesc, category, isPrivate)
+        sboards = db_util.update_board(user_id, boardName, boardName1, boardDesc, category, isPrivate)
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/{UserId}/boards/{boardName}', 'method': 'GET'},
-            {'url': '/users/{UserId}/boards/{boardName}', 'method': 'DELETE'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/', 'method': 'POST'}
+            {'url': '/users/%d/boards/%s/' % (user_id, sboards['boardName']), 'method': 'GET'},
+            {'url': '/users/%d/boards/%s/' % (user_id, sboards['boardName']), 'method': 'DELETE'},
+            {'url': '/users/%d/boards/%s/pins/' % (user_id, sboards['boardName']), 'method': 'POST'}
         ]
-        js = {'Board': sboards, 'Links': links}
-        resp = Response(json.dumps(js, indent=2), status=200, mimetype='application/json')
-        
+        js = {'User': user_id, 'Board': sboards, 'Links': links}
+        resp = Response(json.dumps(js, indent=3), status=200, mimetype='application/json')
         return resp
     else:
-        print
-        "DELETE Request"
+        print "DELETE Request"
         db_util.delete_board(user_id, boardName)
         # Return List of Allowed Operations
         links = {'Links': [
-            {'url': '/users/{UserId}/boards/', 'method': 'POST'}
+            {'url': '/users/%d/boards/' % user_id, 'method': 'POST'}
         ]}
         resp = Response(json.dumps(links), status=200, mimetype='application/json')
-        
         return resp
 
 
 #Create Pins (POST) or List all Pins(GET)
 @app.route('/users/<int:user_id>/boards/<string:boardName>/pins/', methods=['GET', 'POST'])
 def pins(user_id, boardName):
-    print
-    'Board name is: %s' % boardName
+    print 'Board name is: %s' % boardName
     if request.method == "GET":
-        print
-        "GET Request"
+        print "GET Request"
         data = {'User': user_id, 'Board': boardName, 'Pins': db_util.get_pins(user_id, boardName)}
         resp = Response(json.dumps(data, indent=3), status=200, mimetype='application/json')
         return resp
@@ -163,14 +155,12 @@ def pins(user_id, boardName):
         spins = db_util.create_pin(user_id, boardName, pinName, pinImage, pinDesc)
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}', 'method': 'GET'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}', 'method': 'PUT'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}', 'method': 'DELETE'}
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, spins['pin_Id']), 'method': 'GET'},
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, spins['pin_Id']), 'method': 'PUT'},
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, spins['pin_Id']), 'method': 'DELETE'}
         ]
-
-        js = {'Created Pin': spins, 'Links': links}
-        resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
-        
+        js = {'User': user_id, 'Board': boardName, 'Created Pin': spins, 'Links': links}
+        resp = Response(json.dumps(js, indent=4), status=201, mimetype='application/json')
         return resp
 
 
@@ -185,15 +175,12 @@ def apin(user_id, boardName, pin_Id):
 
     # Return List of Allowed Operations
     links = [
-        {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}', 'method': 'PUT'},
-        {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}', 'method': 'DELETE'},
-        {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}/comments/', 'method': 'POST'}
+        {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, pin_Id), 'method': 'PUT'},
+        {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, pin_Id), 'method': 'DELETE'},
+        {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, pin_Id), 'method': 'POST'}
     ]
-
-    js = {'Links': links, 'Pin': aspin}
-    resp = Response(json.dumps(js, indent=2), status=200, mimetype='application/json')
-    
-    #print 'done'
+    js = {'User': user_id, 'Board': boardName, 'Links': links, 'Pin': aspin}
+    resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
     return resp
 
 
@@ -201,46 +188,42 @@ def apin(user_id, boardName, pin_Id):
 @app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/', methods=['PUT', 'DELETE'])
 def updatePin(user_id, boardName, pin_Id):
     if request.method == "PUT":
-        print
-        "PUT Request"
+        print "PUT Request"
         pint_details = request.get_json()
-        pinName = pint_details.get('pinName')
-        pinImage = pint_details.get('pinImage')
-        pinDesc = pint_details.get('pinDesc')
-        upins = db_util.update_pin(user_id, boardName, pin_Id, pinName, pinImage, pinDesc)
+        pin_Id1 = pint_details.get('pin_Id', None)
+        pinName = pint_details.get('pinName', None)
+        pinImage = pint_details.get('pinImage', None)
+        pinDesc = pint_details.get('pinDesc', None)
+        upins = db_util.update_pin(user_id, boardName, pin_Id, pin_Id1, pinName, pinImage, pinDesc)
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}', 'method': 'GET'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}', 'method': 'DELETE'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pin_Id}/comments/', 'method': 'POST'}
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, upins['pin_Id']), 'method': 'GET'},
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, upins['pin_Id']), 'method': 'DELETE'},
+            {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, upins['pin_Id']), 'method': 'POST'}
         ]
-        js = {'Pins': upins, 'Links': links}
-        resp = Response(json.dumps(js, indent=2), status=200, mimetype='application/json')
-        
+        js = {'User': user_id, 'Board': boardName, 'Pins': upins, 'Links': links}
+        resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
         return resp
     else:
-        print
-        'DELETE Request'
+        print "DELETE Request"
         db_util.delete_pin(user_id, boardName, pin_Id)
         #Return List of Allowed Operations
         links = {'Links': [
-            {'url': '/users/{UserId}/boards/{boardName}/pins/', 'method': 'POST'}
+            {'url': '/users/%d/boards/%s/pins/' % (user_id, boardName), 'method': 'POST'}
         ]}
         resp = Response(json.dumps(links), status=200, mimetype='application/json')
-        
         return resp
 
 
 #Create Comments (POST) or List all Comments(GET)
 @app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/', methods=['GET', 'POST'])
 def comments(user_id, boardName, pin_Id):
-    print
-    'Pin Name is: %s' % pin_Id
+    print 'Pin Name is: %s' % pin_Id
     if request.method == "GET":
-        print
-        "GET Request"
-        data = {'User': user_id, 'Board': boardName, 'Pins': pin_Id,
-                'Comments': db_util.get_comments(user_id, boardName, pin_Id)}
+        print "GET Request"
+        data = {'User': user_id, 'Board': boardName, 'Pins': pin_Id, 'Comments': db_util.get_comments(user_id,
+                                                                                                      boardName,
+                                                                                                      pin_Id)}
         resp = Response(json.dumps(data, indent=4), status=200, mimetype='application/json')
         return resp
     else:
@@ -249,14 +232,15 @@ def comments(user_id, boardName, pin_Id):
         comm = db_util.create_comment(user_id, boardName, pin_Id, pinComment)
         # Return List of Allowed Operations
         links = {'Links': [
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'GET'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'PUT'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'DELETE'}
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, comm['comment_Id']),
+             'method': 'GET'},
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, comm['comment_Id']),
+             'method': 'PUT'},
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, comm['comment_Id']),
+             'method': 'DELETE'}
         ]}
-
-        js = {'Created Comment': comm, 'Links': links}
-        resp = Response(json.dumps(js, indent=2), status=201, mimetype='application/json')
-        
+        js = {'User': user_id, 'Board': boardName, 'Pins': pin_Id, 'Created Comment': comm, 'Links': links}
+        resp = Response(json.dumps(js, indent=5), status=201, mimetype='application/json')
         return resp
 
 
@@ -272,15 +256,14 @@ def acomment(user_id, boardName, pin_Id, comment_Id):
 
     # Return List of Allowed Operations
     links = [
-        {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'PUT'},
-        {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'DELETE'},
-        {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/', 'method': 'POST'}
+        {'url': '/users/%d/boards/%s/pins/%d/comments/%d' % (user_id, boardName, pin_Id, comment_Id),
+         'method': 'PUT'},
+        {'url': '/users/%d/boards/%s/pins/%d/comments/%d' % (user_id, boardName, pin_Id, comment_Id),
+         'method': 'DELETE'},
+        {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, pin_Id), 'method': 'POST'}
     ]
-
-    js = {'User': user_id, 'Pin': pin_Id, 'Comment': ascomm, 'Links': links}
-    resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
-    
-    #print 'done'
+    js = {'User': user_id, 'Board': boardName, 'Pin': pin_Id, 'Comment': ascomm, 'Links': links}
+    resp = Response(json.dumps(js, indent=5), status=200, mimetype='application/json')
     return resp
 
 
@@ -289,33 +272,32 @@ def acomment(user_id, boardName, pin_Id, comment_Id):
            methods=['PUT', 'DELETE'])
 def updateComment(user_id, boardName, pin_Id, comment_Id):
     if request.method == "PUT":
-        print "PUT Request"
+        print 'PUT Request'
         comment_details = request.get_json()
-        pin_Id1 = comment_details.get('comment_Id',None)
-        pinComment = comment_details.get('pinComment',None)
-        cpins = db_util.update_comment(user_id, boardName, pin_Id, pin_Id1, comment_Id, pinComment)
+        comment_Id1 = comment_details.get('comment_Id', None)
+        pinComment = comment_details.get('pinComment', None)
+        cpins = db_util.update_comment(user_id, boardName, pin_Id, comment_Id, comment_Id1, pinComment)
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'GET'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/{comment_id}', 'method': 'DELETE'},
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/', 'method': 'POST'}
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, cpins['comment_Id']),
+             'method': 'GET'},
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, cpins['comment_Id']),
+             'method': 'DELETE'},
+            {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, pin_Id), 'method': 'POST'}
         ]
-        js = {'User': user_id, 'Pin': pin_Id, 'Comments': cpins, 'Links': links}
-        resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
-        
+        js = {'User': user_id, 'Board': boardName, 'Pin': pin_Id, 'Comments': cpins, 'Links': links}
+        resp = Response(json.dumps(js, indent=5), status=200, mimetype='application/json')
         return resp
     else:
-        print
-        'DELETE Request'
+        print 'DELETE Request'
         db_util.delete_comment(user_id, boardName, pin_Id, comment_Id)
         #Return List of Allowed Operations
         links = {'Links': [
-            {'url': '/users/{UserId}/boards/{boardName}/pins/{pinName}/comments/', 'method': 'POST'}
+            {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, pin_Id), 'method': 'POST'}
         ]}
         resp = Response(json.dumps(links), status=200, mimetype='application/json')
-        
         return resp
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True)
+    app.run(host='0.0.0.0', debug=True)
