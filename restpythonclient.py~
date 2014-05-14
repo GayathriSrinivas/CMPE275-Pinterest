@@ -193,11 +193,11 @@ def updatePins():
     while True:
         varp = raw_input("Enter fields to be updated :: 1.pin_Id 2.pinName 3.pinImage 4.pinDesc 5.Done Editing")
         if varp == "1":
-            pin_Id1 = raw_input('pin_Id')
+            pin_Id1 = int(raw_input('pin_Id'))
         if varp == "2":
             pinName = raw_input('pinName')
         if varp == "3":
-            pinImage = raw_input('pinImage')
+            pinImage = int(raw_input('pinImage'))
         if varp == "4":
             pinDesc = raw_input('pinDesc')
         if varp == "5":
@@ -218,16 +218,16 @@ def updateComment():
     comment_Id1 = None
     pinComment = None
     while True:
-        varc = raw_input("Enter fields to be updated :: 1.comment_Id 2.pinComment 3.Done Editing")
+        varc = raw_input("Update fields:: 1.comment_Id 2.pinComment 3.Done Editing")
         if varc == "1":
-            comment_Id1 = raw_input('comment_Id')
+            comment_Id1 = int(raw_input('comment_Id'))
         if varc == "2":
             pinComment = raw_input('pinComment')
         if varc == "3":
             break
     data1 = {"comment_Id": comment_Id1, "pinComment": pinComment}
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
-    url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/" % (userID, boardName, pin_Id)
+    url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/%d/" % (userID, boardName, pin_Id, comment_Id1)
     r = requests.put(url, data=json.dumps(data1), headers=headers)
     print r.status_code
     print r.text
@@ -251,7 +251,7 @@ def deleteComment():
     print "Enter Comment to be deleted ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
-    comment_Id = raw_input('comment_Id')
+    comment_Id = int(raw_input('comment_Id'))
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/%d/" % (userID, boardName, pin_Id, comment_Id)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.delete(url, headers=headers)
@@ -276,7 +276,7 @@ def createComment():
     pin_Id = int(raw_input('pin_Id'))
     pinComment = raw_input("pinComment")
     data1 = {"pinComment": pinComment}
-    url = "http://" + host + "/user/%d/boards/%s/pins/%d/comments/" % (userID, boardName, pin_Id)
+    url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/" % (userID, boardName, pin_Id)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.post(url, data=json.dumps(data1), headers=headers)
     print r.status_code

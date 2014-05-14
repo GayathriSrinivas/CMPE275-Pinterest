@@ -204,9 +204,9 @@ def updatePin(user_id, boardName, pin_Id):
         upins = db_util.update_pin(user_id, boardName, pin_Id, pin_Id1, pinName, pinImage, pinDesc)
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, upins['pin_Id']), 'method': 'GET'},
-            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, upins['pin_Id']), 'method': 'DELETE'},
-            {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, upins['pin_Id']), 'method': 'POST'}
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, int(upins['pin_Id'])), 'method': 'GET'},
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, int(upins['pin_Id'])), 'method': 'DELETE'},
+            {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, int(upins['pin_Id'])), 'method': 'POST'}
         ]
         js = {'User': user_id, 'Board': boardName, 'Pins': upins, 'Links': links}
         resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
@@ -285,11 +285,14 @@ def updateComment(user_id, boardName, pin_Id, comment_Id):
         comment_Id1 = comment_details.get('comment_Id', None)
         pinComment = comment_details.get('pinComment', None)
         cpins = db_util.update_comment(user_id, boardName, pin_Id, comment_Id, comment_Id1, pinComment)
+        print "###################################################"
+	print cpins
+	print "###################################################"
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, cpins['comment_Id']),
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, int(cpins['comment_Id'])),
              'method': 'GET'},
-            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, cpins['comment_Id']),
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, int(cpins['comment_Id'])),
              'method': 'DELETE'},
             {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, pin_Id), 'method': 'POST'}
         ]

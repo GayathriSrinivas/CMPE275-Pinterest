@@ -350,6 +350,9 @@ def update_comment(user_id, boardName, pin_Id, comment_Id, comment_Id1, pinComme
                                 temp['pinComment'] = pinComment
                             list_com[ind] = temp
     db.update([doc])
+    print "----------------------"
+    print temp
+    print "----------------------"
     return temp
 
 

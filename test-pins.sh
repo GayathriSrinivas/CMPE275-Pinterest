@@ -51,17 +51,3 @@ echo "get all pins "
 curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/2/boards/Food/pins/
 echo -e "\n"
 
-
-
-
-
-
-
-echo -e "\n"
-curl -i -H "Content-Type: application/json" -X POST -d '{"pinName": "Mountain", "pinImage": "Everest.jpg", "pinDesc": "Amazing mountain"}' http://127.0.0.1:5000/users/2/boards/PlacesToVisit/pins/
-echo -e "\n"
-
-echo -e "\n"
-echo "get all pins "
-curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/2/boards/PlacesToVisit/pins/
-echo -e "\n"
