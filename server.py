@@ -18,18 +18,8 @@ def welcome_page():
 @app.route('/image',methods = ['POST'])
 def image():
     f = request.files['file']
-    #Save on Cloud
-    tup = tempfile.mkstemp(suffix=".jpg",prefix="image_",dir="/var/www/snaptext_images")
-    f = os.fdopen(tup[0], "w")
-    print "Asoulte filname :: ",tup[1]
-    link = "http://snaptext.foamsnet.com/snaptext_images/%s" % os.path.basename(tup[1])
-    print link
-    f.write(request.data)
-    f.close()
-    os.system("chmod a+r %s" % tup[1])
-    return json.dumps({"fileName" : link })
-    f.save('/home/gayathri/CMPE275-Pinterest/images/' + secure_filename(f.filename))
-
+    #Save on Disk
+    f.save('static/images/' + secure_filename(f.filename))
     return Response(json.dumps({"fileName" : f.filename }),status=201, mimetype='application/json')
 
 #Database to Enter Details
@@ -233,7 +223,7 @@ def updatePin(user_id, boardName, pin_Id):
 
 
 #Create Comments (POST) or List all Comments(GET)
-@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/', methods=['GET', 'POST'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/', methods=['GET', 'POST'])
 def comments(user_id, boardName, pin_Id):
     print 'Pin Name is: %s' % pin_Id
     if request.method == "GET":
@@ -262,7 +252,7 @@ def comments(user_id, boardName, pin_Id):
 
 
 #GET a single Comment
-@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/<int:comment_Id>/',
            methods=['GET'])
 def acomment(user_id, boardName, pin_Id, comment_Id):
     print "Comment id is: %d" % comment_Id
@@ -284,8 +274,9 @@ def acomment(user_id, boardName, pin_Id, comment_Id):
     return resp
 
 
+
 #Update or Delete Comments
-@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/<int:comment_Id>/',
            methods=['PUT', 'DELETE'])
 def updateComment(user_id, boardName, pin_Id, comment_Id):
     if request.method == "PUT":
@@ -315,6 +306,15 @@ def updateComment(user_id, boardName, pin_Id, comment_Id):
         resp = Response(json.dumps(links), status=200, mimetype='application/json')
         return resp
 
+
+@app.route('/users/<int:user_id>/public/', methods=['GET','POST'])
+def all_boards(user_id):
+    if request.method == "GET":
+        data = {'User Id, boards' :db_util.get_all_boards(user_id)}
+        print data
+        x=len(data)
+    resp = Response(json.dumps(data, indent=x), status=200, mimetype='application/json')
+    return resp
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0",debug=True)

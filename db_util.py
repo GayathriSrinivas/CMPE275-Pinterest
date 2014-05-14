@@ -8,6 +8,7 @@ from couchdb.mapping import Document, IntegerField, TextField
 
 app = Flask(__name__)
 flag = True
+image_path = "http://localhost:5000/static/images"
 
 
 def init_boards():
@@ -127,6 +128,30 @@ def get_doc_for_user_id(user_id):
     return doc
 
 
+def get_all_boards(user_id):
+    db = init_boards()
+    list_doc = []
+    viewMapFunction = '''
+        function(doc) {
+            if (doc.user_id != ''' + str(user_id) + '''&& doc.doc_type != "UserIdCount" && doc.boards.length != 0) {
+                for( var i=0, l=doc.boards.length; i<l; i++) {
+                    if(doc.boards[i].isPrivate != "True") {
+                        emit(doc.user_id,doc.boards[i]);
+                    }
+                }
+            }
+        }
+    '''
+    for row in db.query(viewMapFunction):
+        list_doc.append(row.key)
+        list_doc.append(row.value)
+    #return list_doc
+    if(list_doc.__len__() != 0):
+        print list_doc.__len__()
+        return list_doc
+    else:
+        return "no boards yet"
+
 def create_board(user_id, boardName, boardDesc, category, isPrivate):
     print "Create Board"
     db = init_boards()
@@ -141,6 +166,9 @@ def create_board(user_id, boardName, boardDesc, category, isPrivate):
 def get_boards(user_id):
     print "Get List of all boards"
     list_boards = get_doc_for_user_id(user_id)['boards']
+    for board in list_boards:
+        for pin in board.get('pins', []):
+            pin['pinImage'] = '%s/%s' % (image_path, pin['pinImage'])
     return list_boards
 
 
@@ -199,6 +227,7 @@ def create_pin(user_id, boardName, pinName, pinImage, pinDesc):
         if x['boardName'] == boardName:
             x['pins'].append(pin)
     db.update([doc])
+    pin['pinImage'] = '%s/%s' % (image_path, pin['pinImage'])
     return pin
 
 
@@ -209,6 +238,8 @@ def get_pins(user_id, boardName):
     for x in list_boards:
         if x['boardName'] == boardName:
             list_pins = x['pins']
+    for pin in list_pins:
+        pin['pinImage'] = "%s/%s" % (image_path, pin['pinImage'])
     return list_pins
 
 
@@ -217,6 +248,7 @@ def get_apin(user_id, boardName, pin_Id):
     list_p = get_pins(user_id, boardName)
     for x in list_p:
         if x['pin_Id'] == pin_Id:
+            x['pinImage'] = '%s/%s' % (image_path, x['pinImage'])
             return x
     return 0
 
@@ -243,6 +275,7 @@ def update_pin(user_id, boardName, pin_Id, pin_Id1, pinName, pinImage, pinDesc):
                         temp['pinDesc'] = pinDesc
                     list_up[ind] = temp
     db.update([doc])
+    temp['pinImage'] = '%s/%s' % (image_path, temp['pinImage'])
     return temp
 
 
@@ -253,7 +286,7 @@ def delete_pin(user_id, boardName, pin_Id):
     list_b = doc['boards']
     for x in list_b:
         if x['boardName'] == boardName:
-            list_upd = x['pins']
+            list_upd = x['pi_ns']
         new_list = [y for y in list_upd if not y['pin_Id'] == pin_Id]
         x['pins'] = new_list
     db.update([doc])

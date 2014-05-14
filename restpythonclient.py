@@ -1,9 +1,9 @@
 import json
 import requests
+import os
 
 global host
 global userID
-
 
 def signUp():
     firstName = raw_input('Firstname')
@@ -72,7 +72,7 @@ def getSingleBoard():
     global userID
     print "Enter Board Name to be returned"
     boardName = raw_input('boardName')
-    url = "http://" + host + "users/%d/boards/%s/" % (userID, boardName)
+    url = "http://" + host + "/users/%d/boards/%s/" % (userID, boardName)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.get(url, headers=headers)
     print r.status_code
@@ -121,12 +121,11 @@ def updateBoard():
 def createPins():
     global userID
     #Choose Image from this List of Images
-    images = { '1':'college.jpg',
-               '2' :'clothes.jpg',
-               '3' :'food.jpg',
-               '4':'homeDecor.jpg'
+    images = { '1' :'clothes1.jpg','2' :'clothes2.jpg','3' :'clothes3.jpg','4' :'clothes4.jpg',
+               '5': 'decor1.jpg','6': 'decor1.jpg','7': 'decor1.jpg','8': 'decor1.jpg',
+               '9': 'food1.jpg','10': 'food1.jpg','11': 'food1.jpg','12': 'food1.jpg'
               }
-    print json.dumps(images,indent=2)
+    print json.dumps(images,indent=1)
     pinImage = raw_input ("choose Which image to upload") 
     pinName = raw_input('pinName')
     boardName = raw_input('boardName')
@@ -134,10 +133,11 @@ def createPins():
 
     #Storing the Image on the Server
     url = "http://" + host + "/image"  
-    files = { 'file': open('/home/gayathri/CMPE275-Pinterest/client-images/'+images[pinImage], 'rb') }
+    current_dir = os.path.dirname(os.path.realpath(__file__)) + '/client-images/'
+    files = { 'file': open(current_dir+images[pinImage], 'rb') }
     r = requests.post(url, files=files) 
     r = json.loads(r.text)
-    
+
     #Storing Image Info on the Server
     data1 = {"pinName": pinName, "pinImage": r["fileName"], "pinDesc": pinDesc}
     url = "http://" + host + "/users/%d/boards/%s/pins/" % (userID, boardName)
@@ -148,7 +148,6 @@ def createPins():
     print r.status_code
     print r.text
 
-
 def getPins():
     global userID
     boardName = raw_input('boardName')
@@ -158,12 +157,11 @@ def getPins():
     print r.status_code
     print r.text
 
-
 def getSinglePin():
     global userID
     print "Enter Pin to be returned ::"
     boardName = raw_input('boardName')
-    pin_Id = raw_input('pin_Id')
+    pin_Id = int(raw_input('pin_Id'))
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/" % (userID, boardName, pin_Id)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.get(url, headers=headers)
