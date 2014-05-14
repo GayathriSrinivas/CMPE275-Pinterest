@@ -283,6 +283,9 @@ def delete_pin(user_id, boardName, pin_Id):
     list_b = doc['boards']
     for x in list_b:
         if x['boardName'] == boardName:
+            print "$$$$$$$$$$$$$$$$$$$$$$"
+            print x
+            print "$$$$$$$$$$$$$$$$$$$$$$"
             list_upd = x['pi_ns']
         new_list = [y for y in list_upd if not y['pin_Id'] == pin_Id]
         x['pins'] = new_list
