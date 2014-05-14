@@ -233,7 +233,7 @@ def updatePin(user_id, boardName, pin_Id):
 
 
 #Create Comments (POST) or List all Comments(GET)
-@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/', methods=['GET', 'POST'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/', methods=['GET', 'POST'])
 def comments(user_id, boardName, pin_Id):
     print 'Pin Name is: %s' % pin_Id
     if request.method == "GET":
@@ -262,7 +262,7 @@ def comments(user_id, boardName, pin_Id):
 
 
 #GET a single Comment
-@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/<int:comment_Id>/',
            methods=['GET'])
 def acomment(user_id, boardName, pin_Id, comment_Id):
     print "Comment id is: %d" % comment_Id
@@ -285,7 +285,7 @@ def acomment(user_id, boardName, pin_Id, comment_Id):
 
 
 #Update or Delete Comments
-@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<string:pin_Id>/comments/<int:comment_Id>/',
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/<int:comment_Id>/',
            methods=['PUT', 'DELETE'])
 def updateComment(user_id, boardName, pin_Id, comment_Id):
     if request.method == "PUT":
