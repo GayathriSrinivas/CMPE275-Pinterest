@@ -136,21 +136,18 @@ def get_all_boards(user_id):
             if (doc.user_id != ''' + str(user_id) + '''&& doc.doc_type != "UserIdCount" && doc.boards.length != 0) {
                 for( var i=0, l=doc.boards.length; i<l; i++) {
                     if(doc.boards[i].isPrivate != "True" || doc.boards[i].isPrivate != "true") {
-                        emit(doc.user_id,doc.boards[i]);
+                        emit(doc.emailId,doc.boards[i]);
                     }
                 }
             }
         }
     '''
     for row in db.query(viewMapFunction):
-        list_doc.append(row.key)
         list_doc.append(row.value)
-    #return list_doc
-    if(list_doc.__len__() != 0):
-        print list_doc.__len__()
-        return list_doc
-    else:
-        return "no boards yet"
+        list_doc[-1]['emailId'] = row.key
+        for pin in list_doc[-1].get('pins', []):
+            pin['pinImage'] = '%s/%s' % (image_path, pin['pinImage'])
+    return list_doc
 
 def create_board(user_id, boardName, boardDesc, category, isPrivate):
     print "Create Board"

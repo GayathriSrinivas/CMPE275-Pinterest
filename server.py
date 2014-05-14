@@ -307,13 +307,10 @@ def updateComment(user_id, boardName, pin_Id, comment_Id):
         return resp
 
 
-@app.route('/users/<int:user_id>/public/', methods=['GET','POST'])
+@app.route('/users/<int:user_id>/public/')
 def all_boards(user_id):
-    if request.method == "GET":
-        data = {'User Id, boards' :db_util.get_all_boards(user_id)}
-        print data
-        x=len(data)
-    resp = Response(json.dumps(data, indent=x), status=200, mimetype='application/json')
+    data = {'boards' :db_util.get_all_boards(user_id)}
+    resp = Response(json.dumps(data, indent=len(data)), status=200, mimetype='application/json')
     return resp
 
 if __name__ == '__main__':

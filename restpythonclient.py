@@ -132,7 +132,7 @@ def createPins():
     pinDesc = raw_input('pinDesc')
 
     #Storing the Image on the Server
-    url = "http://" + host + "/image"  
+    url = "http://" + host + "/image/"  
     current_dir = os.path.dirname(os.path.realpath(__file__)) + '/client-images/'
     files = { 'file': open(current_dir+images[pinImage], 'rb') }
     r = requests.post(url, files=files) 
