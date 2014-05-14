@@ -299,10 +299,16 @@ def get_items(json_data, key, data_list):  #Function to parse json
             if type(item) in (list, dict):
                 get_items(item, key, data_list)
 
+def viewAllPublicBoards():
+    url = "http://127.0.0.1:5000/users/%s/public" %userID
+    headers = {'Content-type':'application/json', 'Accept':'text/json'}
+    r = requests.get(url, headers = headers)
+    print r.status_code
+    print r.text
 
 def start_boards():
     while True:
-        option = raw_input("Enter an option 1.boards 2.getBoards 3.getSingleBoard 4.DeleteBoards 5.UpdateBoards 6.Exit")
+        option = raw_input("Enter an option 1.boards 2.getBoards 3.getSingleBoard 4.DeleteBoards 5.UpdateBoards  6.View All Public Boards by other Users 7.Exit")
         if option == '1':
             print "createBoard"
             createBoard()
@@ -316,6 +322,8 @@ def start_boards():
         if option == '5':
             updateBoard()
         if option == '6':
+            viewAllPublicBoards()
+        if option == '7':
             main_options()
 
 

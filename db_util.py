@@ -135,7 +135,7 @@ def get_all_boards(user_id):
         function(doc) {
             if (doc.user_id != ''' + str(user_id) + '''&& doc.doc_type != "UserIdCount" && doc.boards.length != 0) {
                 for( var i=0, l=doc.boards.length; i<l; i++) {
-                    if(doc.boards[i].isPrivate != "True") {
+                    if(doc.boards[i].isPrivate != "True" || doc.boards[i].isPrivate != "true") {
                         emit(doc.user_id,doc.boards[i]);
                     }
                 }

@@ -15,7 +15,7 @@ def welcome_page():
     return "Welcome to Pinterest !!!"
 
 
-@app.route('/image',methods = ['POST'])
+@app.route('/image/',methods = ['POST'])
 def image():
     f = request.files['file']
     #Save on Disk
