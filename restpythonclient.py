@@ -5,6 +5,7 @@ import os
 global host
 global userID
 
+
 def signUp():
     firstName = raw_input('Firstname')
     lastName = raw_input('Lastname')
@@ -121,21 +122,21 @@ def updateBoard():
 def createPins():
     global userID
     #Choose Image from this List of Images
-    images = { '1' :'clothes1.jpg','2' :'clothes2.jpg','3' :'clothes3.jpg','4' :'clothes4.jpg',
-               '5': 'decor1.jpg','6': 'decor1.jpg','7': 'decor1.jpg','8': 'decor1.jpg',
-               '9': 'food1.jpg','10': 'food1.jpg','11': 'food1.jpg','12': 'food1.jpg'
-              }
-    print json.dumps(images,indent=1)
-    pinImage = raw_input ("choose Which image to upload") 
+    images = {'1': 'clothes1.jpg', '2': 'clothes2.jpg', '3': 'clothes3.jpg', '4': 'clothes4.jpg',
+              '5': 'decor1.jpg', '6': 'decor1.jpg', '7': 'decor1.jpg', '8': 'decor1.jpg',
+              '9': 'food1.jpg', '10': 'food1.jpg', '11': 'food1.jpg', '12': 'food1.jpg'
+    }
+    print json.dumps(images, indent=1)
+    pinImage = raw_input("choose Which image to upload")
     pinName = raw_input('pinName')
     boardName = raw_input('boardName')
     pinDesc = raw_input('pinDesc')
 
     #Storing the Image on the Server
-    url = "http://" + host + "/image/"  
+    url = "http://" + host + "/image/"
     current_dir = os.path.dirname(os.path.realpath(__file__)) + '/client-images/'
-    files = { 'file': open(current_dir+images[pinImage], 'rb') }
-    r = requests.post(url, files=files) 
+    files = {'file': open(current_dir + images[pinImage], 'rb')}
+    r = requests.post(url, files=files)
     r = json.loads(r.text)
 
     #Storing Image Info on the Server
@@ -148,6 +149,7 @@ def createPins():
     print r.status_code
     print r.text
 
+
 def getPins():
     global userID
     boardName = raw_input('boardName')
@@ -156,6 +158,7 @@ def getPins():
     r = requests.get(url, headers=headers)
     print r.status_code
     print r.text
+
 
 def getSinglePin():
     global userID
@@ -186,23 +189,20 @@ def updatePins():
     print "Enter Pin to be updated ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
-    pin_Id1 = None
     pinName = None
     pinImage = None
     pinDesc = None
     while True:
-        varp = raw_input("Enter fields to be updated :: 1.pin_Id 2.pinName 3.pinImage 4.pinDesc 5.Done Editing")
+        varp = raw_input("Enter fields to be updated :: 1.pinName 2.pinImage 3.pinDesc 4.Done Editing")
         if varp == "1":
-            pin_Id1 = int(raw_input('pin_Id'))
-        if varp == "2":
             pinName = raw_input('pinName')
-        if varp == "3":
+        if varp == "2":
             pinImage = int(raw_input('pinImage'))
-        if varp == "4":
+        if varp == "3":
             pinDesc = raw_input('pinDesc')
-        if varp == "5":
+        if varp == "4":
             break
-    data1 = {"pin_Id": pin_Id1, "pinName": pinName, "pinImage": pinImage, "pinDesc": pinDesc}
+    data1 = {"pinName": pinName, "pinImage": pinImage, "pinDesc": pinDesc}
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/" % (userID, boardName, pin_Id)
     r = requests.put(url, data=json.dumps(data1), headers=headers)
@@ -215,19 +215,17 @@ def updateComment():
     print "Enter Comment to be updated ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
-    comment_Id1 = None
+    comment_Id = int(raw_input('comment_Id'))
     pinComment = None
     while True:
-        varc = raw_input("Update fields:: 1.comment_Id 2.pinComment 3.Done Editing")
+        varc = raw_input("Update fields:: 1.pinComment 2.Done Editing")
         if varc == "1":
-            comment_Id1 = int(raw_input('comment_Id'))
-        if varc == "2":
             pinComment = raw_input('pinComment')
-        if varc == "3":
+        if varc == "2":
             break
-    data1 = {"comment_Id": comment_Id1, "pinComment": pinComment}
+    data1 = {"pinComment": pinComment}
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
-    url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/%d/" % (userID, boardName, pin_Id, comment_Id1)
+    url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/%d/" % (userID, boardName, pin_Id, comment_Id)
     r = requests.put(url, data=json.dumps(data1), headers=headers)
     print r.status_code
     print r.text
@@ -299,16 +297,19 @@ def get_items(json_data, key, data_list):  #Function to parse json
             if type(item) in (list, dict):
                 get_items(item, key, data_list)
 
+
 def viewAllPublicBoards():
-    url = "http://127.0.0.1:5000/users/%s/public" %userID
-    headers = {'Content-type':'application/json', 'Accept':'text/json'}
-    r = requests.get(url, headers = headers)
+    url = "http://127.0.0.1:5000/users/%s/public" % userID
+    headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
+    r = requests.get(url, headers=headers)
     print r.status_code
     print r.text
 
+
 def start_boards():
     while True:
-        option = raw_input("Enter an option 1.CreateBoards 2.getBoards 3.getSingleBoard 4.DeleteBoards 5.UpdateBoards  6.View All Public Boards by other Users 7.Exit")
+        option = raw_input(
+            "Enter an option 1.CreateBoards 2.GetBoards 3.GetSingleBoard 4.DeleteBoards 5.UpdateBoards 6.ViewAllPublicBoards by other Users 7.Exit")
         if option == '1':
             print "createBoard"
             createBoard()
@@ -329,7 +330,7 @@ def start_boards():
 
 def start_pins():
     while True:
-        option = raw_input("Enter an option 1.pins 2.getPins 3.getSinglePin 4.DeletePin 5.UpdatePin 6.Exit")
+        option = raw_input("Enter an option 1.Pins 2.GetPins 3.GetSinglePin 4.DeletePin 5.UpdatePin 6.Exit")
         if option == '1':
             print "createPin"
             createPins()
@@ -348,7 +349,7 @@ def start_pins():
 
 def start_comments():
     while True:
-        option = raw_input("Enter an option 1.comments 2.getcomments 3.DeleteComment 4.UpdateComment 5.Exit")
+        option = raw_input("Enter an option 1.Comments 2.GetComments 3.GetSingleComment 4.DeleteComment 5.UpdateComment 6.Exit")
         if option == '1':
             print "createBoard"
             createComment()
@@ -356,10 +357,12 @@ def start_comments():
             print "getBoards"
             getComment()
         if option == '3':
-            deleteComment()
+            getSingleComment()
         if option == '4':
-            updateComment()
+            deleteComment()
         if option == '5':
+            updateComment()
+        if option == '6':
             main_options()
 
 
@@ -376,8 +379,8 @@ def main_options():
 
 
 if __name__ == '__main__':
-    host = "127.0.0.1:5000"
-    #host = raw_input("The host id: ")
+    #host = "127.0.0.1:5000"
+    host = raw_input("The host id: ")
     while True:
         var = raw_input("Enter an option 1. SignUp 2.SignIn")
         if var == '1':

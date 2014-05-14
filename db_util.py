@@ -133,9 +133,9 @@ def get_all_boards(user_id):
     list_doc = []
     viewMapFunction = '''
         function(doc) {
-            if (doc.user_id != ''' + str(user_id) + '''&& doc.doc_type != "UserIdCount" && doc.boards.length != 0) {
+            if (doc.user_id != ''' + str(user_id) + ''' && doc.boards.length != 0) {
                 for( var i=0, l=doc.boards.length; i<l; i++) {
-                    if(doc.boards[i].isPrivate != "True" || doc.boards[i].isPrivate != "true") {
+                    if(doc.boards[i].isPrivate != "True" && doc.boards[i].isPrivate != "true") {
                         emit(doc.emailId,doc.boards[i]);
                     }
                 }
@@ -148,6 +148,7 @@ def get_all_boards(user_id):
         for pin in list_doc[-1].get('pins', []):
             pin['pinImage'] = '%s/%s' % (image_path, pin['pinImage'])
     return list_doc
+
 
 def create_board(user_id, boardName, boardDesc, category, isPrivate):
     print "Create Board"
@@ -250,7 +251,7 @@ def get_apin(user_id, boardName, pin_Id):
     return 0
 
 
-def update_pin(user_id, boardName, pin_Id, pin_Id1, pinName, pinImage, pinDesc):
+def update_pin(user_id, boardName, pin_Id, pinName, pinImage, pinDesc):
     print "Update a pin"
     temp = []
     db = init_boards()
@@ -262,8 +263,6 @@ def update_pin(user_id, boardName, pin_Id, pin_Id1, pinName, pinImage, pinDesc):
             for ind, y in enumerate(list_up):
                 if y['pin_Id'] == pin_Id:
                     temp = y
-                    if pin_Id1 is not None:
-                        temp['pin_Id'] = pin_Id1
                     if pinName is not None:
                         temp['pinName'] = pinName
                     if pinImage is not None:
@@ -283,10 +282,10 @@ def delete_pin(user_id, boardName, pin_Id):
     list_b = doc['boards']
     for x in list_b:
         if x['boardName'] == boardName:
-            print "$$$$$$$$$$$$$$$$$$$$$$"
-            print x
-            print "$$$$$$$$$$$$$$$$$$$$$$"
-            list_upd = x['pi_ns']
+            # print "$$$$$$$$$$$$$$$$$$$$$$"
+            # print x
+            # print "$$$$$$$$$$$$$$$$$$$$$$"
+            list_upd = x['pins']
         new_list = [y for y in list_upd if not y['pin_Id'] == pin_Id]
         x['pins'] = new_list
     db.update([doc])
@@ -332,7 +331,7 @@ def get_acomment(user_id, boardName, pin_Id, comment_Id):
     return 0
 
 
-def update_comment(user_id, boardName, pin_Id, comment_Id, comment_Id1, pinComment):
+def update_comment(user_id, boardName, pin_Id, comment_Id, pinComment):
     print "Update a comment"
     temp = []
     db = init_boards()
@@ -347,15 +346,13 @@ def update_comment(user_id, boardName, pin_Id, comment_Id, comment_Id1, pinComme
                     for ind, z in enumerate(list_com):
                         if z['comment_Id'] == comment_Id:
                             temp = z
-                            if comment_Id1 is not None:
-                                temp['comment_Id'] = comment_Id1
                             if pinComment is not None:
                                 temp['pinComment'] = pinComment
                             list_com[ind] = temp
     db.update([doc])
-    print "----------------------"
-    print temp
-    print "----------------------"
+    # print "----------------------"
+    # print temp
+    # print "----------------------"
     return temp
 
 

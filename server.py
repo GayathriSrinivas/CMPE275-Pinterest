@@ -4,6 +4,7 @@ from flask import Response
 from flask import abort
 import json
 from werkzeug import secure_filename
+
 import db_util
 
 
@@ -15,12 +16,13 @@ def welcome_page():
     return "Welcome to Pinterest !!!"
 
 
-@app.route('/image/',methods = ['POST'])
+@app.route('/image/', methods=['POST'])
 def image():
     f = request.files['file']
     #Save on Disk
     f.save('static/images/' + secure_filename(f.filename))
-    return Response(json.dumps({"fileName" : f.filename }),status=201, mimetype='application/json')
+    return Response(json.dumps({"fileName": f.filename}), status=201, mimetype='application/json')
+
 
 #Database to Enter Details
 @app.route("/users/signUp/", methods=['POST'])
@@ -162,9 +164,9 @@ def pins(user_id, boardName):
         spins = db_util.create_pin(user_id, boardName, pinName, pinImage, pinDesc)
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, spins['pin_Id']), 'method': 'GET'},
-            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, spins['pin_Id']), 'method': 'PUT'},
-            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, spins['pin_Id']), 'method': 'DELETE'}
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, int(spins['pin_Id'])), 'method': 'GET'},
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, int(spins['pin_Id'])), 'method': 'PUT'},
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, int(spins['pin_Id'])), 'method': 'DELETE'}
         ]
         js = {'User': user_id, 'Board': boardName, 'Created Pin': spins, 'Links': links}
         resp = Response(json.dumps(js, indent=4), status=201, mimetype='application/json')
@@ -197,16 +199,15 @@ def updatePin(user_id, boardName, pin_Id):
     if request.method == "PUT":
         print "PUT Request"
         pint_details = request.get_json()
-        pin_Id1 = pint_details.get('pin_Id', None)
         pinName = pint_details.get('pinName', None)
         pinImage = pint_details.get('pinImage', None)
         pinDesc = pint_details.get('pinDesc', None)
-        upins = db_util.update_pin(user_id, boardName, pin_Id, pin_Id1, pinName, pinImage, pinDesc)
+        upins = db_util.update_pin(user_id, boardName, pin_Id, pinName, pinImage, pinDesc)
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, int(upins['pin_Id'])), 'method': 'GET'},
-            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, int(upins['pin_Id'])), 'method': 'DELETE'},
-            {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, int(upins['pin_Id'])), 'method': 'POST'}
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, pin_Id), 'method': 'GET'},
+            {'url': '/users/%d/boards/%s/pins/%d/' % (user_id, boardName, pin_Id), 'method': 'DELETE'},
+            {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, pin_Id), 'method': 'POST'}
         ]
         js = {'User': user_id, 'Board': boardName, 'Pins': upins, 'Links': links}
         resp = Response(json.dumps(js, indent=4), status=200, mimetype='application/json')
@@ -228,9 +229,7 @@ def comments(user_id, boardName, pin_Id):
     print 'Pin Name is: %s' % pin_Id
     if request.method == "GET":
         print "GET Request"
-        data = {'User': user_id, 'Board': boardName, 'Pins': pin_Id, 'Comments': db_util.get_comments(user_id,
-                                                                                                      boardName,
-                                                                                                      pin_Id)}
+        data = {'User': user_id, 'Board': boardName, 'Pins': pin_Id, 'Comments': db_util.get_comments(user_id, boardName, pin_Id)}
         resp = Response(json.dumps(data, indent=4), status=200, mimetype='application/json')
         return resp
     else:
@@ -239,11 +238,11 @@ def comments(user_id, boardName, pin_Id):
         comm = db_util.create_comment(user_id, boardName, pin_Id, pinComment)
         # Return List of Allowed Operations
         links = {'Links': [
-            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, comm['comment_Id']),
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, int(comm['comment_Id'])),
              'method': 'GET'},
-            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, comm['comment_Id']),
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, int(comm['comment_Id'])),
              'method': 'PUT'},
-            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, comm['comment_Id']),
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, int(comm['comment_Id'])),
              'method': 'DELETE'}
         ]}
         js = {'User': user_id, 'Board': boardName, 'Pins': pin_Id, 'Created Comment': comm, 'Links': links}
@@ -252,8 +251,7 @@ def comments(user_id, boardName, pin_Id):
 
 
 #GET a single Comment
-@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/<int:comment_Id>/',
-           methods=['GET'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/<int:comment_Id>/', methods=['GET'])
 def acomment(user_id, boardName, pin_Id, comment_Id):
     print "Comment id is: %d" % comment_Id
     ascomm = db_util.get_acomment(user_id, boardName, pin_Id, comment_Id)
@@ -274,25 +272,22 @@ def acomment(user_id, boardName, pin_Id, comment_Id):
     return resp
 
 
-
 #Update or Delete Comments
-@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/<int:comment_Id>/',
-           methods=['PUT', 'DELETE'])
+@app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/<int:comment_Id>/', methods=['PUT', 'DELETE'])
 def updateComment(user_id, boardName, pin_Id, comment_Id):
     if request.method == "PUT":
         print 'PUT Request'
         comment_details = request.get_json()
-        comment_Id1 = comment_details.get('comment_Id', None)
         pinComment = comment_details.get('pinComment', None)
-        cpins = db_util.update_comment(user_id, boardName, pin_Id, comment_Id, comment_Id1, pinComment)
-        print "###################################################"
-	print cpins
-	print "###################################################"
+        cpins = db_util.update_comment(user_id, boardName, pin_Id, comment_Id, pinComment)
+        # print "###################################################"
+        # print cpins
+        # print "###################################################"
         # Return List of Allowed Operations
         links = [
-            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, int(cpins['comment_Id'])),
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, comment_Id),
              'method': 'GET'},
-            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, int(cpins['comment_Id'])),
+            {'url': '/users/%d/boards/%s/pins/%d/comments/%d/' % (user_id, boardName, pin_Id, comment_Id),
              'method': 'DELETE'},
             {'url': '/users/%d/boards/%s/pins/%d/comments/' % (user_id, boardName, pin_Id), 'method': 'POST'}
         ]
@@ -310,11 +305,13 @@ def updateComment(user_id, boardName, pin_Id, comment_Id):
         return resp
 
 
+#Get all the public boards of all the other users
 @app.route('/users/<int:user_id>/public/')
 def all_boards(user_id):
-    data = {'boards' :db_util.get_all_boards(user_id)}
+    data = {'Boards': db_util.get_all_boards(user_id)}
     resp = Response(json.dumps(data, indent=len(data)), status=200, mimetype='application/json')
     return resp
 
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",debug=True)
+    app.run(host="0.0.0.0", debug=True)
