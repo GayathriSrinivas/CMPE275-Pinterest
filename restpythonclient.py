@@ -173,7 +173,7 @@ def deletePins():
     global userID
     print "Enter Pin to be deleted ::"
     boardName = raw_input('boardName')
-    pin_Id = raw_input('pin_Id')
+    pin_Id = int(raw_input('pin_Id'))
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/" % (userID, boardName, pin_Id)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.delete(url, headers=headers)
@@ -185,7 +185,7 @@ def updatePins():
     global userID
     print "Enter Pin to be updated ::"
     boardName = raw_input('boardName')
-    pin_Id = raw_input('pin_Id')
+    pin_Id = int(raw_input('pin_Id'))
     pin_Id1 = None
     pinName = None
     pinImage = None
@@ -214,7 +214,7 @@ def updateComment():
     global userID
     print "Enter Comment to be updated ::"
     boardName = raw_input('boardName')
-    pin_Id = raw_input('pin_Id')
+    pin_Id = int(raw_input('pin_Id'))
     comment_Id1 = None
     pinComment = None
     while True:
@@ -237,7 +237,7 @@ def getSingleComment():
     global userID
     print "Enter Comment to be returned ::"
     boardName = raw_input('boardName')
-    pin_Id = raw_input('pin_Id')
+    pin_Id = int(raw_input('pin_Id'))
     comment_Id = raw_input('comment_Id')
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/%d/" % (userID, boardName, pin_Id, comment_Id)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
@@ -250,7 +250,7 @@ def deleteComment():
     global userID
     print "Enter Comment to be deleted ::"
     boardName = raw_input('boardName')
-    pin_Id = raw_input('pin_Id')
+    pin_Id = int(raw_input('pin_Id'))
     comment_Id = raw_input('comment_Id')
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/%d/" % (userID, boardName, pin_Id, comment_Id)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
@@ -262,7 +262,7 @@ def deleteComment():
 def getComment():
     global userID
     boardName = raw_input('boardName')
-    pin_Id = raw_input('pin_Id')
+    pin_Id = int(raw_input('pin_Id'))
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/" % (userID, boardName, pin_Id)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.get(url, headers=headers)
@@ -273,7 +273,7 @@ def getComment():
 def createComment():
     global userID
     boardName = raw_input('boardName')
-    pin_Id = raw_input('pin_Id')
+    pin_Id = int(raw_input('pin_Id'))
     pinComment = raw_input("pinComment")
     data1 = {"pinComment": pinComment}
     url = "http://" + host + "/user/%d/boards/%s/pins/%d/comments/" % (userID, boardName, pin_Id)
