@@ -27,7 +27,6 @@ def signUp():
 
 
 def signIn():
-    global userID
     email = raw_input('email')
     password = raw_input('password')
     data1 = {'emailId': email, 'password': password}
@@ -47,7 +46,6 @@ def signIn():
 
 
 def createBoard():
-    global userID
     boardName = raw_input('boardName')
     boardDesc = raw_input('boardDesc')
     category = raw_input('category')
@@ -61,7 +59,6 @@ def createBoard():
 
 
 def getBoards():
-    global userID
     url = "http://" + host + "/users/%d/boards/" % userID
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.get(url, headers=headers)
@@ -70,7 +67,6 @@ def getBoards():
 
 
 def getSingleBoard():
-    global userID
     print "Enter Board Name to be returned"
     boardName = raw_input('boardName')
     url = "http://" + host + "/users/%d/boards/%s/" % (userID, boardName)
@@ -81,7 +77,6 @@ def getSingleBoard():
 
 
 def deleteBoard():
-    global userID
     print "Enter Board Name to be deleted ::"
     boardName = raw_input('boardName')
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
@@ -92,7 +87,6 @@ def deleteBoard():
 
 
 def updateBoard():
-    global userID
     print "Enter Board Name to be updated ::"
     boardName = raw_input('boardName')
     boardName1 = None
@@ -120,7 +114,7 @@ def updateBoard():
 
 
 def createPins():
-    global userID
+
     #Choose Image from this List of Images
     images = {'1': 'clothes1.jpg', '2': 'clothes2.jpg', '3': 'clothes3.jpg', '4': 'clothes4.jpg',
               '5': 'decor1.jpg', '6': 'decor1.jpg', '7': 'decor1.jpg', '8': 'decor1.jpg',
@@ -151,7 +145,6 @@ def createPins():
 
 
 def getPins():
-    global userID
     boardName = raw_input('boardName')
     url = "http://" + host + "/users/%d/boards/%s/pins/" % (userID, boardName)
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
@@ -161,7 +154,6 @@ def getPins():
 
 
 def getSinglePin():
-    global userID
     print "Enter Pin to be returned ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
@@ -173,7 +165,6 @@ def getSinglePin():
 
 
 def deletePins():
-    global userID
     print "Enter Pin to be deleted ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
@@ -185,7 +176,6 @@ def deletePins():
 
 
 def updatePins():
-    global userID
     print "Enter Pin to be updated ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
@@ -193,7 +183,7 @@ def updatePins():
     pinImage = None
     pinDesc = None
     while True:
-        varp = raw_input("Enter fields to be updated :: 1.pinName 2.pinImage 3.pinDesc 4.Done Editing")
+        varp = raw_input("Enter fields to be updated :: 1. pinName 2. pinImage 3. pinDesc 4. Done Editing")
         if varp == "1":
             pinName = raw_input('pinName')
         if varp == "2":
@@ -211,14 +201,13 @@ def updatePins():
 
 
 def updateComment():
-    global userID
     print "Enter Comment to be updated ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
     comment_Id = int(raw_input('comment_Id'))
     pinComment = None
     while True:
-        varc = raw_input("Update fields:: 1.pinComment 2.Done Editing")
+        varc = raw_input("Update fields:: 1. pinComment 2. Done Editing")
         if varc == "1":
             pinComment = raw_input('pinComment')
         if varc == "2":
@@ -232,7 +221,6 @@ def updateComment():
 
 
 def getSingleComment():
-    global userID
     print "Enter Comment to be returned ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
@@ -245,7 +233,6 @@ def getSingleComment():
 
 
 def deleteComment():
-    global userID
     print "Enter Comment to be deleted ::"
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
@@ -258,7 +245,6 @@ def deleteComment():
 
 
 def getComment():
-    global userID
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
     url = "http://" + host + "/users/%d/boards/%s/pins/%d/comments/" % (userID, boardName, pin_Id)
@@ -269,7 +255,6 @@ def getComment():
 
 
 def createComment():
-    global userID
     boardName = raw_input('boardName')
     pin_Id = int(raw_input('pin_Id'))
     pinComment = raw_input("pinComment")
@@ -299,7 +284,7 @@ def get_items(json_data, key, data_list):  #Function to parse json
 
 
 def viewAllPublicBoards():
-    url = "http://127.0.0.1:5000/users/%s/public" % userID
+    url = "http://" + host + "/users/%d/public" % userID
     headers = {'Content-type': 'application/json', 'Accept': 'text/json'}
     r = requests.get(url, headers=headers)
     print r.status_code
@@ -309,12 +294,12 @@ def viewAllPublicBoards():
 def start_boards():
     while True:
         option = raw_input(
-            "Enter an option 1.CreateBoards 2.GetBoards 3.GetSingleBoard 4.DeleteBoards 5.UpdateBoards 6.ViewAllPublicBoards by other Users 7.Exit")
+            "Enter an option 1. CreateBoards 2. GetBoards 3. GetSingleBoard 4. DeleteBoards 5. UpdateBoards 6. ViewAllPublicBoards by other Users 7. Exit")
         if option == '1':
-            print "createBoard"
+            print "Create Board"
             createBoard()
         if option == '2':
-            print "getBoards"
+            print "Get All Boards of the User"
             getBoards()
         if option == '3':
             getSingleBoard()
@@ -330,12 +315,12 @@ def start_boards():
 
 def start_pins():
     while True:
-        option = raw_input("Enter an option 1.Pins 2.GetPins 3.GetSinglePin 4.DeletePin 5.UpdatePin 6.Exit")
+        option = raw_input("Enter an option 1. Pins 2. GetPins 3. GetSinglePin 4. DeletePin 5. UpdatePin 6. Exit")
         if option == '1':
-            print "createPin"
+            print "Create Pin"
             createPins()
         if option == '2':
-            print "getpins"
+            print "Get All Pins of the User"
             getPins()
         if option == '3':
             getSinglePin()
@@ -349,12 +334,12 @@ def start_pins():
 
 def start_comments():
     while True:
-        option = raw_input("Enter an option 1.Comments 2.GetComments 3.GetSingleComment 4.DeleteComment 5.UpdateComment 6.Exit")
+        option = raw_input("Enter an option 1. Comments 2. GetComments 3. GetSingleComment 4. DeleteComment 5. UpdateComment 6. Exit")
         if option == '1':
-            print "createBoard"
+            print "Create Comment"
             createComment()
         if option == '2':
-            print "getBoards"
+            print "Get All Comments of the User"
             getComment()
         if option == '3':
             getSingleComment()
@@ -367,7 +352,7 @@ def start_comments():
 
 
 def main_options():
-    opt = raw_input("Enter an option 1. Boards 2.Pins 3. Comments 4.Exit")
+    opt = raw_input("Enter an option 1. Boards 2. Pins 3. Comments 4. Exit")
     if opt == '1':
         start_boards()
     if opt == '2':
@@ -382,7 +367,7 @@ if __name__ == '__main__':
     #host = "127.0.0.1:5000"
     host = raw_input("The host id: ")
     while True:
-        var = raw_input("Enter an option 1. SignUp 2.SignIn")
+        var = raw_input("Enter an option 1. SignUp 2. SignIn")
         if var == '1':
             print "signUp"
             signUp()

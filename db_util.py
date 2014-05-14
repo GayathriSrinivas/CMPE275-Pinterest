@@ -25,6 +25,7 @@ def init_boards():
 
 
 rec = 0
+rec1 = 0
 
 
 class UserIdCount(Document):
@@ -49,15 +50,26 @@ def autoIncrementUserId():
     return doc['count']
 
 
-def autoIncrement():
+def autoIncrementPinId():
     global rec
     pstrt = 1
     pint = 1
-    if (rec == 0):
+    if rec == 0:
         rec = pstrt
     else:
         rec += pint
     return rec
+
+
+def autoIncrementCommentId():
+    global rec1
+    pstrt = 1
+    pint = 1
+    if rec1 == 0:
+        rec1 = pstrt
+    else:
+        rec1 += pint
+    return rec1
 
 
 def checkForFirstDoc():
@@ -219,7 +231,7 @@ def create_pin(user_id, boardName, pinName, pinImage, pinDesc):
     db = init_boards()
     # Need to find document of given user - use View to find document ID for corresponding user
     doc = get_doc_for_user_id(user_id)
-    pin = {'pin_Id': autoIncrement(), 'pinName': pinName, 'pinImage': pinImage, 'pinDesc': pinDesc, 'comments': []}
+    pin = {'pin_Id': autoIncrementPinId(), 'pinName': pinName, 'pinImage': pinImage, 'pinDesc': pinDesc, 'comments': []}
     list_up = doc['boards']
     for x in list_up:
         if x['boardName'] == boardName:
@@ -297,7 +309,7 @@ def create_comment(user_id, boardName, pin_Id, pinComment):
     db = init_boards()
     # Need to find document of given user - use View to find document ID for corresponding user
     doc = get_doc_for_user_id(user_id)
-    comment = {'comment_Id': autoIncrement(), 'pinComment': pinComment}
+    comment = {'comment_Id': autoIncrementCommentId(), 'pinComment': pinComment}
     list_boards = doc['boards']
     for x in list_boards:
         if x['boardName'] == boardName:

@@ -4,7 +4,6 @@ from flask import Response
 from flask import abort
 import json
 from werkzeug import secure_filename
-
 import db_util
 
 
