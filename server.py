@@ -225,7 +225,7 @@ def updatePin(user_id, boardName, pin_Id):
 #Create Comments (POST) or List all Comments(GET)
 @app.route('/users/<int:user_id>/boards/<string:boardName>/pins/<int:pin_Id>/comments/', methods=['GET', 'POST'])
 def comments(user_id, boardName, pin_Id):
-    print 'Pin Name is: %s' % pin_Id
+    print 'Pin Name is: %d' % pin_Id
     if request.method == "GET":
         print "GET Request"
         data = {'User': user_id, 'Board': boardName, 'Pins': pin_Id, 'Comments': db_util.get_comments(user_id, boardName, pin_Id)}
