@@ -289,6 +289,7 @@ def update_pin(user_id, boardName, pin_Id, pinName, pinImage, pinDesc):
 
 def delete_pin(user_id, boardName, pin_Id):
     print "Delete a Pin"
+    list_upd = []
     db = init_boards()
     doc = get_doc_for_user_id(user_id)
     list_b = doc['boards']
@@ -370,6 +371,7 @@ def update_comment(user_id, boardName, pin_Id, comment_Id, pinComment):
 
 def delete_comment(user_id, boardName, pin_Id, comment_Id):
     print "Delete a Comment"
+    list_comm = []
     db = init_boards()
     doc = get_doc_for_user_id(user_id)
     list_b = doc['boards']
@@ -378,6 +380,7 @@ def delete_comment(user_id, boardName, pin_Id, comment_Id):
             list_p = x['pins']
             for y in list_p:
                 if y['pin_Id'] == pin_Id:
+                    print "in pins_id checking taking comments"
                     list_comm = y['comments']
                 new_list = [z for z in list_comm if not z['comment_Id'] == comment_Id]
                 y['comments'] = new_list

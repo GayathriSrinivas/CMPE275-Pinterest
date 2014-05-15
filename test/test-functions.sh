@@ -12,14 +12,14 @@ echo -e "\n"
 echo"Test create a board "
 echo -e "\n"
 echo -e "\n"
-curl -i -H "Content-Type: application/json" -X POST -d '{"boardName":"Food","boardDesc":"Amazing Food","Indian category": "Food","isPrivate": "false"}' http://127.0.0.1:5000/users/2/boards/
-curl -i -H "Content-Type: application/json" -X POST -d '{"boardName":"Decor","boardDesc":"Beautiful Decor","category": "Home Decor","isPrivate": "True"}' http://127.0.0.1:5000/users/2/boards/
-curl -i -H "Content-Type: application/json" -X POST -d '{"boardName":"Clothes","boardDesc":"Very Pretty Collection","category": "Summer Wear","isPrivate": "false"}' http://127.0.0.1:5000/users/2/boards/
+curl -i -H "Content-Type: application/json" -X POST -d '{"boardName":"Food","boardDesc":"Amazing Food","Indian category": "Food","isPrivate": "false"}' http://127.0.0.1:5000/users/1/boards/
+curl -i -H "Content-Type: application/json" -X POST -d '{"boardName":"Decor","boardDesc":"Beautiful Decor","category": "Home Decor","isPrivate": "True"}' http://127.0.0.1:5000/users/1/boards/
+curl -i -H "Content-Type: application/json" -X POST -d '{"boardName":"Clothes","boardDesc":"Very Pretty Collection","category": "Summer Wear","isPrivate": "false"}' http://127.0.0.1:5000/users/1/boards/
 echo -e "\n"
 
 echo -e "\n"
 echo "get all boards "
-curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/2/boards/Food/
+curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/1/boards/Food/
 echo -e "\n"
 
 echo -e "\n"
@@ -48,35 +48,29 @@ echo -e "\n"
 
 echo -e "\n"
 echo "Test create a pin on board just created"
-curl -i -H "Content-Type: application/json" -X POST -d '{"pinName": "Food", "pinImage": "food1.jpg","pinDesc": "Amazing Food"}' http://127.0.0.1:5000/users/2/boards/Food/pins/
+curl -i -H "Content-Type: application/json" -X POST -d '{"pinName": "Food", "pinImage": "food1.jpg","pinDesc": "Amazing Food"}' http://127.0.0.1:5000/users/1/boards/Food/pins/
 echo -e "\n"
 
 echo -e "\n"
-curl -i -H "Content-Type: application/json" -X POST -d '{"pinName": "Home Decoration", "pinImage": "decor1.jpg", "pinDesc": "simple and neat designs"}' http://127.0.0.1:5000/users/2/boards/Decor/pins/
+curl -i -H "Content-Type: application/json" -X POST -d '{"pinName": "Home Decoration", "pinImage": "decor1.jpg", "pinDesc": "simple and neat designs"}' http://127.0.0.1:5000/users/1/boards/Decor/pins/
 echo -e "\n"
 
 
 echo -e "\n"
 echo "get all pins "
-curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/2/boards/PlacesToVisit/pins/
+curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/1/boards/Food/pins/
 echo -e "\n"
-
-
-#echo -e "\n"
-#echo "update pin"
-#curl -i -H "Content-Type: application/json" -X POST -d '{"pinName": "Beach", "pinDesc": "Beach in Seychelles"}' http://127.0.0.1:5000/users/2/boards/PlacesToVisit/pins/13/
-#echo -e "\n"
 
 
 #Test create a comment on a pin on board just created
 echo -e "\n"
 echo "Test create a comment on a pin on board just created"
-curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "Wish to visit"}' http://127.0.0.1:5000/users/2/boards/PlacesToVisit/pins/13/comments/
+curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "Wish to eat"}' http://127.0.0.1:5000/users/1/boards/Food/pins/1/comments/
 echo -e "\n"
 
 
 echo -e "\n"
 echo "get all comments "
-curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/2/boards/PlacesToVisit/pins/
+curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/1/boards/Food/pins/
 echo -e "\n"
 
