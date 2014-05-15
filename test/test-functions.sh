@@ -9,7 +9,7 @@ echo -e "\n"
 curl -i -H "Content-Type: application/json" -X POST -d '{"emailId":"deo.priyanka02@gmail.com", "password":"frfe"}' http://127.0.0.1:5000/users/login/
 echo -e "\n"
 
-echo"Test create a board "
+echo "Test create a board "
 echo -e "\n"
 echo -e "\n"
 curl -i -H "Content-Type: application/json" -X POST -d '{"boardName":"Food","boardDesc":"Amazing Food","Indian category": "Food","isPrivate": "false"}' http://127.0.0.1:5000/users/1/boards/
