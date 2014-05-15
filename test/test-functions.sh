@@ -87,13 +87,13 @@ curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "superb"}
 echo -e "\n"
 
 echo -e "\n"
-curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "nice decor"}' http://127.0.0.1:5000/users/1/boards/Decor/pins/1/comments/
-curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "cool decor"}' http://127.0.0.1:5000/users/1/boards/Decor/pins/1/comments/
+curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "nice decor"}' http://127.0.0.1:5000/users/1/boards/Decor/pins/5/comments/
+curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "cool decor"}' http://127.0.0.1:5000/users/1/boards/Decor/pins/5/comments/
 echo -e "\n"
 
 echo -e "\n"
-curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "nice clothes"}' http://127.0.0.1:5000/users/1/boards/Clothes/pins/1/comments/
-curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "clothes"}' http://127.0.0.1:5000/users/1/boards/Clothes/pins/1/comments/
+curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "nice clothes"}' http://127.0.0.1:5000/users/1/boards/Clothes/pins/9/comments/
+curl -i -H "Content-Type: application/json" -X POST -d '{"pinComment": "clothes"}' http://127.0.0.1:5000/users/1/boards/Clothes/pins/9/comments/
 
 echo "get all comments "
 curl -i -H "Content-Type: application/json" -X GET http://127.0.0.1:5000/users/1/boards/Food/pins/
