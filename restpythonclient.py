@@ -3,7 +3,7 @@ import requests
 import os
 
 global host
-global userID
+userID = 0
 
 
 def signUp():
@@ -27,6 +27,7 @@ def signUp():
 
 
 def signIn():
+    global userID
     email = raw_input('email')
     password = raw_input('password')
     data1 = {'emailId': email, 'password': password}
@@ -114,7 +115,6 @@ def updateBoard():
 
 
 def createPins():
-
     #Choose Image from this List of Images
     images = {'1': 'clothes1.jpg', '2': 'clothes2.jpg', '3': 'clothes3.jpg', '4': 'clothes4.jpg',
               '5': 'decor1.jpg', '6': 'decor1.jpg', '7': 'decor1.jpg', '8': 'decor1.jpg',
@@ -187,7 +187,14 @@ def updatePins():
         if varp == "1":
             pinName = raw_input('pinName')
         if varp == "2":
-            pinImage = int(raw_input('pinImage'))
+            #Choose Image from this List of Images
+            images = {'1': 'clothes1.jpg', '2': 'clothes2.jpg', '3': 'clothes3.jpg', '4': 'clothes4.jpg',
+                      '5': 'decor1.jpg', '6': 'decor1.jpg', '7': 'decor1.jpg', '8': 'decor1.jpg',
+                      '9': 'food1.jpg', '10': 'food1.jpg', '11': 'food1.jpg', '12': 'food1.jpg'
+            }
+            print json.dumps(images, indent=1)
+            print "choose Which image to upload"
+            pinImage = raw_input('pinImage')
         if varp == "3":
             pinDesc = raw_input('pinDesc')
         if varp == "4":
