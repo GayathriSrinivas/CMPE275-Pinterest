@@ -41,7 +41,7 @@ echo -e "\n"
 #update a pin
 echo -e "\n"
 echo "update a pin"
-curl -i -H "Content-Type: application/json" -X PUT -d '{"pin_Id": "14", "pinName": "My favourite Food", "pinImage": "food1.jpg", "pinDesc": "My Favorite food"}' http://127.0.0.1:5000/users/1/boards/Food/pins/1/ 
+curl -i -H "Content-Type: application/json" -X PUT -d '{"pin_Id": "1", "pinName": "My favourite Food", "pinImage": "food1.jpg", "pinDesc": "My Favorite food"}' http://127.0.0.1:5000/users/1/boards/Food/pins/1/ 
 echo -e "\n"
 
 #get all pins 
